@@ -17,6 +17,7 @@ Complete the environment variables with your secrets, credentials, etc.
 ```bash
 NODE_ENV=development
 DATABASE_URL=mysql://<USERNAME>:<PASSWORD>@localhost:3306/<DATABASE_NAME>
+AUTH_JWT_SECRET=<YOUR-JWT-SECRET>
 ```
 
 ## Start this project
@@ -28,6 +29,15 @@ DATABASE_URL=mysql://<USERNAME>:<PASSWORD>@localhost:3306/<DATABASE_NAME>
 - Make sure a `.env` exists (see above)
 - Run the migrations: `yarn migrate:dev`
 - Start the development server: `yarn start:dev`
+
+### Production
+
+- Enable Corepack: `corepack enable`
+- Install all dependencies: `yarn`
+- Make sure a `.env` exists (see above) or set the environment variables in your production environment
+- Run the migrations: `yarn prisma migrate deploy`
+- Build the project: `yarn build`
+- Start the production server: `node build/src/index.js`
 
 ## Test this project
 
