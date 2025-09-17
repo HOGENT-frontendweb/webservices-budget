@@ -6,6 +6,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
+  app.enableCors({
+    origins: ['http://localhost:5173'],
+    maxAge: 3 * 60 * 60,
+  })
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
