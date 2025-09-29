@@ -4,7 +4,7 @@ import {
   CreatePlaceRequestDto,
   UpdatePlaceRequestDto,
   PlaceListResponseDto,
-  PlaceResponseDto,
+  PlaceDetailResponseDto,
 } from './place.dto';
 import {
   InjectDrizzle,
@@ -25,7 +25,7 @@ export class PlaceService {
     return { items };
   }
 
-  async getById(id: number): Promise<PlaceResponseDto> {
+  async getById(id: number): Promise<PlaceDetailResponseDto> {
     const place = await this.db.query.places.findFirst({
       where: eq(places.id, id),
       with: {
@@ -45,7 +45,7 @@ export class PlaceService {
     return place;
   }
 
-  async create(place: CreatePlaceRequestDto): Promise<PlaceResponseDto> {
+  async create(place: CreatePlaceRequestDto): Promise<PlaceDetailResponseDto> {
     const [newPlace] = await this.db
       .insert(places)
       .values(place)
@@ -57,7 +57,7 @@ export class PlaceService {
   async updateById(
     id: number,
     changes: UpdatePlaceRequestDto,
-  ): Promise<PlaceResponseDto> {
+  ): Promise<PlaceDetailResponseDto> {
     await this.db.update(places).set(changes).where(eq(places.id, id));
 
     return this.getById(id);
