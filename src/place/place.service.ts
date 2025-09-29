@@ -28,6 +28,14 @@ export class PlaceService {
   async getById(id: number): Promise<PlaceResponseDto> {
     const place = await this.db.query.places.findFirst({
       where: eq(places.id, id),
+      with: {
+        transactions: {
+          with: {
+            user: true,
+            place: true,
+          },
+        },
+      },
     });
 
     if (!place) {
