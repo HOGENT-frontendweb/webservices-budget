@@ -8,6 +8,13 @@
       "when": 1759138041827,
       "tag": "0000_new_beyonder",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1759152388029,
+      "tag": "0001_daffy_franklin_richards",
+      "breakpoints": true
     }
   ]
 }
