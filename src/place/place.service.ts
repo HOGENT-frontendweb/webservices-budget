@@ -1,17 +1,34 @@
 // src/place/place.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PLACES, Place } from '../data/mock_data';
-import { CreatePlaceRequestDto, UpdatePlaceRequestDto, PlaceListResponseDto, PlaceResponseDto } from './place.dto';
+import {
+  CreatePlaceRequestDto,
+  UpdatePlaceRequestDto,
+  PlaceListResponseDto,
+  PlaceResponseDto,
+} from './place.dto';
+import {
+  InjectDrizzle,
+  type DatabaseProvider,
+} from '../drizzle/drizzle.provider';
+import { eq } from 'drizzle-orm';
+import { places } from '../drizzle/schema';
 
 @Injectable()
 export class PlaceService {
+  constructor(
+    @InjectDrizzle()
+    private readonly db: DatabaseProvider,
+  ) {}
 
-  getAll(): PlaceListResponseDto {
-    return { items: PLACES };
+  async getAll(): Promise<PlaceListResponseDto> {
+    const items = await this.db.query.places.findMany();
+    return { items };
   }
 
-  getById(id: number): PlaceResponseDto {
-    const place = PLACES.find((item: Place) => item.id === id);
+  async getById(id: number): Promise<PlaceResponseDto> {
+    const place = await this.db.query.places.findFirst({
+      where: eq(places.id, id),
+    });
 
     if (!place) {
       throw new NotFoundException('No place with this id exists');
@@ -20,24 +37,29 @@ export class PlaceService {
     return place;
   }
 
-  create({ name, rating }: CreatePlaceRequestDto): PlaceResponseDto {
-    const newplace = { id: Math.max(...PLACES.map((item: Place) => item.id)) + 1, name, rating };
-    PLACES.push(newplace);
-    return newplace;
+  async create(place: CreatePlaceRequestDto): Promise<PlaceResponseDto> {
+    const [newPlace] = await this.db
+      .insert(places)
+      .values(place)
+      .$returningId();
+
+    return this.getById(newPlace.id);
   }
 
-  updateById(id: number, { name, rating }: UpdatePlaceRequestDto): PlaceResponseDto {
-    let existingplace = this.getById(id);
-    if (existingplace) {
-      existingplace = { id: id, name, rating }
-    }
-    return existingplace;
+  async updateById(
+    id: number,
+    changes: UpdatePlaceRequestDto,
+  ): Promise<PlaceResponseDto> {
+    await this.db.update(places).set(changes).where(eq(places.id, id));
+
+    return this.getById(id);
   }
 
-  deleteById(id: number): void {
-    const index = PLACES.findIndex((item: Place) => item.id === id);
-    if (index >= 0) {
-      PLACES.splice(index, 1);
+  async deleteById(id: number): Promise<void> {
+    const [result] = await this.db.delete(places).where(eq(places.id, id));
+
+    if (result.affectedRows === 0) {
+      throw new NotFoundException('No place with this id exists');
     }
   }
 }
