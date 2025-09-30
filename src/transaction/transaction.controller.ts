@@ -16,26 +16,29 @@ import {
   TransactionResponseDto,
   TransactionListResponseDto,
 } from './transaction.dto';
+import { TransactionService } from './transaction.service';
 
 @Controller('transactions')
 export class TransactionController {
+  constructor(private transactionService: TransactionService) {}
+
   @Get()
   async getAllTransactions(): Promise<TransactionListResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.getAll();
   }
 
   @Post()
   async createTransaction(
     @Body() createTransactionDto: CreateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.create(createTransactionDto);
   }
 
   @Get(':id')
   async getTransactionById(
     @Param('id') id: number,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.getById(id);
   }
 
   @Put(':id')
@@ -43,12 +46,12 @@ export class TransactionController {
     @Param('id') id: number,
     @Body() updateTransactionDto: UpdateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.updateById(id, updateTransactionDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTransaction(@Param('id') id: number): Promise<void> {
-    throw new Error('Not implemented');
+    return this.transactionService.deleteById(id);
   }
 }
