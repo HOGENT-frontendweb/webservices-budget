@@ -11,7 +11,7 @@ import {
   type DatabaseProvider,
 } from '../drizzle/drizzle.provider';
 import { eq } from 'drizzle-orm';
-import { places } from '../drizzle/schema';
+import { places, userFavoritePlaces } from '../drizzle/schema';
 
 @Injectable()
 export class PlaceService {
@@ -69,5 +69,13 @@ export class PlaceService {
     if (result.affectedRows === 0) {
       throw new NotFoundException('No place with this id exists');
     }
+  }
+
+  async getFavoritePlacesByUserId(userId: number): Promise<PlaceResponseDto[]> {
+    const favoritePlaces = await this.db.query.userFavoritePlaces.findMany({
+      where: eq(userFavoritePlaces.userId, userId),
+      with: { place: true },
+    });
+    return favoritePlaces.map((fav) => fav.place);
   }
 }
