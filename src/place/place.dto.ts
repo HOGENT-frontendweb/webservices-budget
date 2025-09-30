@@ -3,7 +3,7 @@ export class CreatePlaceRequestDto {
   rating: number;
 }
 
-export class UpdatePlaceRequestDto extends CreatePlaceRequestDto { }
+export class UpdatePlaceRequestDto extends CreatePlaceRequestDto {}
 
 export class PlaceResponseDto extends CreatePlaceRequestDto {
   id: number;
@@ -12,4 +12,3 @@ export class PlaceResponseDto extends CreatePlaceRequestDto {
 export class PlaceListResponseDto {
   items: PlaceResponseDto[];
 }
-
