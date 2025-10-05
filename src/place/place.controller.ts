@@ -27,8 +27,8 @@ export class PlaceController {
   }
 
   @Get(':id')
-  async getPlaceById(@Param('id') id: string): Promise<PlaceResponseDto> {
-    return this.placeService.getById(Number(id));
+  async getPlaceById(@Param('id') id: number): Promise<PlaceResponseDto> {
+    return this.placeService.getById(id);
   }
 
   @Post()
@@ -41,15 +41,15 @@ export class PlaceController {
 
   @Put(':id')
   async updatePlace(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
   ): Promise<PlaceResponseDto> {
-    return this.placeService.updateById(Number(id), updatePlaceDto);
+    return this.placeService.updateById(id, updatePlaceDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePlace(@Param('id') id: string): Promise<void> {
-    await this.placeService.deleteById(Number(id));
+  async deletePlace(@Param('id') id: number): Promise<void> {
+    await this.placeService.deleteById(id);
   }
 }

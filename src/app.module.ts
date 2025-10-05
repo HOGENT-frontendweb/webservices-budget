@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
@@ -8,6 +8,7 @@ import { DrizzleModule } from './drizzle/drizzle.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
+import { LoggerMiddleware } from './lib/logger.middleware';
 
 @Module({
   imports: [
@@ -23,4 +24,8 @@ import configuration from './config/configuration';
   controllers: [AppController, HealthController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*path');
+  }
+}
