@@ -1,3 +1,5 @@
+import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+
 export class UserListResponseDto {
   items: UserResponseDto[];
 }
@@ -8,6 +10,9 @@ export class UserResponseDto {
 }
 
 export class CreateUserRequestDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
   name: string;
 }
 

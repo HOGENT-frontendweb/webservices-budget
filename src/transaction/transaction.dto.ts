@@ -1,5 +1,7 @@
 import { PlaceResponseDto } from '../place/place.dto';
 import { UserResponseDto } from '../user/user.dto';
+import { Min, IsDate, MaxDate, IsPositive, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class TransactionListResponseDto {
   items: TransactionResponseDto[];
@@ -14,9 +16,17 @@ export class TransactionResponseDto {
 }
 
 export class CreateTransactionRequestDto {
+  @IsInt()
+  @Min(1)
   placeId: number;
+  @IsInt()
+  @Min(1)
   userId: number;
+  @IsPositive()
   amount: number;
+  @Type(() => Date)
+  @IsDate()
+  @MaxDate(new Date(), { message: 'Date must not be in the future' })
   date: Date;
 }
 

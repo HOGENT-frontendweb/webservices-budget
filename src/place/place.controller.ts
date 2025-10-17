@@ -8,13 +8,14 @@ import {
   Post,
   HttpStatus,
   HttpCode,
+  ParseIntPipe
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
 import {
   CreatePlaceRequestDto,
   UpdatePlaceRequestDto,
   PlaceListResponseDto,
-  PlaceDetailResponseDto
+  PlaceDetailResponseDto,
 } from './place.dto';
 
 @Controller('places')
@@ -27,8 +28,8 @@ export class PlaceController {
   }
 
   @Get(':id')
-  async getPlaceById(@Param('id') id: string): Promise<PlaceDetailResponseDto> {
-    return this.placeService.getById(Number(id));
+  async getPlaceById(@Param('id', ParseIntPipe) id: number): Promise<PlaceDetailResponseDto> {
+    return this.placeService.getById(id);
   }
 
   @Post()
@@ -41,15 +42,15 @@ export class PlaceController {
 
   @Put(':id')
   async updatePlace(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
   ): Promise<PlaceDetailResponseDto> {
-    return this.placeService.updateById(Number(id), updatePlaceDto);
+    return this.placeService.updateById(id, updatePlaceDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePlace(@Param('id') id: string): Promise<void> {
-    await this.placeService.deleteById(Number(id));
+  async deletePlace(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.placeService.deleteById(id);
   }
 }

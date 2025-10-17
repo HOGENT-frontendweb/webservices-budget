@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PlaceService } from '../place/place.service';
 import { PlaceResponseDto } from '../place/place.dto';
@@ -32,7 +33,9 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
+  async getUserById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserResponseDto> {
     return this.userService.getById(id);
   }
 
@@ -45,7 +48,7 @@ export class UserController {
 
   @Put(':id')
   async updateUserById(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserRequestDto,
   ): Promise<UserResponseDto> {
     return this.userService.updateById(id, dto);
@@ -53,13 +56,13 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUserById(@Param('id') id: number): Promise<void> {
+  async deleteUserById(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.deleteById(id);
   }
 
   @Get('/:id/favoriteplaces')
   async getFavoritePlaces(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<PlaceResponseDto[]> {
     return this.placeService.getFavoritePlacesByUserId(id);
   }
