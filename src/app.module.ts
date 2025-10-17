@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DrizzleModule } from './drizzle/drizzle.module';
 import { TransactionModule } from './transaction/transaction.module';
 import configuration from './config/configuration';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import configuration from './config/configuration';
     }),
     DrizzleModule,
     TransactionModule,
+    UserModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
