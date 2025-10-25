@@ -17,6 +17,8 @@ import {
   PlaceListResponseDto,
   PlaceDetailResponseDto,
 } from './place.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/roles';
 
 @Controller('places')
 export class PlaceController {
@@ -33,6 +35,7 @@ export class PlaceController {
   }
 
   @Post()
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   async createPlace(
     @Body() createPlaceDto: CreatePlaceRequestDto,
@@ -41,6 +44,7 @@ export class PlaceController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMIN)
   async updatePlace(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
@@ -49,6 +53,7 @@ export class PlaceController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePlace(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.placeService.deleteById(id);
