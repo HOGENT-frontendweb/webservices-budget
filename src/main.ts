@@ -53,7 +53,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origins: cors.origins,
+    origin: cors.origins,
     maxAge: cors.maxAge,
   });
 
