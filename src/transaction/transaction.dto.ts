@@ -19,11 +19,10 @@ export class CreateTransactionRequestDto {
   @IsInt()
   @Min(1)
   placeId: number;
-  @IsInt()
-  @Min(1)
-  userId: number;
+
   @IsPositive()
   amount: number;
+
   @Type(() => Date)
   @IsDate()
   @MaxDate(new Date(), { message: 'Date must not be in the future' })

@@ -11,6 +11,7 @@ import {
 } from '../drizzle/drizzle.provider';
 import { and, eq } from 'drizzle-orm';
 import { transactions } from '../drizzle/schema';
+import { Role } from '../auth/roles';
 
 @Injectable()
 export class TransactionService {
@@ -19,33 +20,58 @@ export class TransactionService {
     private readonly db: DatabaseProvider,
   ) {}
 
-  async getAll(): Promise<TransactionListResponseDto> {
+  async getAll(
+    userId: number,
+    roles: string[],
+  ): Promise<TransactionListResponseDto> {
     const items = await this.db.query.transactions.findMany({
       columns: {
         id: true,
         amount: true,
         date: true,
       },
+      where: roles.includes(Role.ADMIN)
+        ? undefined
+        : eq(transactions.userId, userId),
       with: {
         place: true,
-        user: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
     return { items };
   }
 
-  async getById(id: number): Promise<TransactionResponseDto> {
+  async getById(
+    id: number,
+    userId: number,
+    roles: string[],
+  ): Promise<TransactionResponseDto> {
+    const whereCondition = roles.includes(Role.ADMIN)
+      ? eq(transactions.id, id)
+      : and(eq(transactions.id, id), eq(transactions.userId, userId));
     const transaction = await this.db.query.transactions.findFirst({
       columns: {
         id: true,
         amount: true,
         date: true,
       },
-      where: eq(transactions.id, id),
+      where: whereCondition,
       with: {
         place: true,
-        user: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -57,39 +83,43 @@ export class TransactionService {
   }
 
   async create(
-    dto: CreateTransactionRequestDto,
+    userId: number,
+    { amount, date, placeId }: CreateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
     const [newTransaction] = await this.db
       .insert(transactions)
       .values({
-        ...dto,
-        date: new Date(dto.date),
+        amount,
+        date,
+        userId: userId,
+        placeId: placeId,
       })
       .$returningId();
 
-    return this.getById(newTransaction.id);
+    return this.getById(newTransaction.id, userId, [Role.USER]);
   }
 
   async updateById(
     id: number,
-    { amount, date, placeId, userId }: UpdateTransactionRequestDto,
+    userId: number,
+    { amount, date, placeId }: UpdateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
     await this.db
       .update(transactions)
       .set({
         amount,
-        date: new Date(date),
+        date,
         placeId,
       })
       .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
 
-    return this.getById(id);
+    return this.getById(id, userId, [Role.USER]);
   }
 
-  async deleteById(id: number): Promise<void> {
+  async deleteById(id: number, userId: number): Promise<void> {
     const [result] = await this.db
       .delete(transactions)
-      .where(eq(transactions.id, id));
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
 
     if (result.affectedRows === 0) {
       throw new NotFoundException('No transaction with this id exists');
