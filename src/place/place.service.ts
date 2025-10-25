@@ -1,4 +1,3 @@
-// src/place/place.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreatePlaceRequestDto,

@@ -15,6 +15,13 @@
       "when": 1759152388029,
       "tag": "0001_daffy_franklin_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761392397228,
+      "tag": "0002_glorious_veda",
+      "breakpoints": true
     }
   ]
 }

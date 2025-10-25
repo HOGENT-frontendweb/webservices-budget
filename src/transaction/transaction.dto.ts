@@ -1,5 +1,5 @@
 import { PlaceResponseDto } from '../place/place.dto';
-import { UserResponseDto } from '../user/user.dto';
+import { PublicUserResponseDto } from '../user/user.dto';
 import { Min, IsDate, MaxDate, IsPositive, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -11,7 +11,7 @@ export class TransactionResponseDto {
   id: number;
   amount: number;
   date: Date;
-  user: UserResponseDto;
+  user: PublicUserResponseDto;
   place: PlaceResponseDto;
 }
 

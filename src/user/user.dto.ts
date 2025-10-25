@@ -1,19 +1,44 @@
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsEmail, MinLength, MaxLength } from 'class-validator';
+import { Expose } from 'class-transformer';
 
 export class UserListResponseDto {
-  items: UserResponseDto[];
+  items: PublicUserResponseDto[];
 }
 
-export class UserResponseDto {
+export class PublicUserResponseDto {
+  @Expose()
   id: number;
+
+  @Expose()
   name: string;
+
+  @Expose()
+  email: string;
 }
 
-export class CreateUserRequestDto {
+export class RegisterUserRequestDto {
   @IsString()
-  @IsNotEmpty()
+  @MinLength(2)
   @MaxLength(255)
   name: string;
+
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(128)
+  password: string;
 }
 
-export class UpdateUserRequestDto extends CreateUserRequestDto {}
+export class UpdateUserRequestDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(255)
+  name: string;
+
+  @IsString()
+  @IsEmail()
+  email: string;
+}

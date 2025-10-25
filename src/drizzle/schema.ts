@@ -7,6 +7,7 @@ import {
   tinyint,
   datetime,
   primaryKey,
+  json,
 } from 'drizzle-orm/mysql-core';
 
 export const places = mysqlTable(
@@ -19,10 +20,17 @@ export const places = mysqlTable(
   (table) => [uniqueIndex('idx_place_name_unique').on(table.name)],
 );
 
-export const users = mysqlTable('users', {
-  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
-  name: varchar('name', { length: 255 }).notNull(),
-});
+export const users = mysqlTable(
+  'users',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    name: varchar('name', { length: 255 }).notNull(),
+    email: varchar('email', { length: 255 }).notNull(),
+    passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+    roles: json('roles').notNull(),
+  },
+  (table) => [uniqueIndex('idx_user_email_unique').on(table.email)],
+);
 
 export const transactions = mysqlTable('transactions', {
   id: int('id', { unsigned: true }).primaryKey().autoincrement(),

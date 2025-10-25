@@ -1,6 +1,8 @@
 import { drizzle } from 'drizzle-orm/mysql2';
 import * as mysql from 'mysql2/promise';
 import * as schema from './schema';
+import * as argon2 from 'argon2';
+import { Role } from '../auth/roles';
 
 const connection = mysql.createPool({
   uri: process.env.DATABASE_URL,
@@ -11,6 +13,15 @@ const db = drizzle(connection, {
   schema,
   mode: 'default',
 });
+
+async function hashPassword(password: string): Promise<string> {
+  return argon2.hash(password, {
+    type: argon2.argon2id,
+    hashLength: 32,
+    timeCost: 2,
+    memoryCost: 2 ** 16,
+  });
+}
 
 async function resetDatabase() {
   console.log('🗑️ Resetting database...');
@@ -49,18 +60,28 @@ async function seedPlaces() {
 async function seedUsers() {
   console.log('👥 Seeding users...');
 
+  const passwordHash = await hashPassword('12345678');
   await db.insert(schema.users).values([
     {
       id: 1,
       name: 'Thomas Aelbrecht',
+      email: 'thomas.aelbrecht@hogent.be',
+      passwordHash: passwordHash,
+      roles: [Role.ADMIN, Role.USER],
     },
     {
       id: 2,
       name: 'Pieter Van Der Helst',
+      email: 'pieter.vanderhelst@hogent.be',
+      passwordHash: passwordHash,
+      roles: [Role.USER],
     },
     {
       id: 3,
       name: 'Karine Samyn',
+      email: 'karine.samyn@hogent.be',
+      passwordHash: passwordHash,
+      roles: [Role.USER],
     },
   ]);
 
