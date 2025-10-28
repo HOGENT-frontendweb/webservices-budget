@@ -25,12 +25,12 @@ import { LoginResponseDto } from '../session/session.dto';
 import { AuthService } from '../auth/auth.service';
 import { Role } from '../auth/roles';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { CheckUserAccessGuard } from '../auth/guards/userAccess.guard';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { type Session } from '../types/auth';
 import { ParseUserIdPipe } from '../auth/decorators/parseUserId.pipe';
 import { AuthDelayInterceptor } from '../auth/interceptors/authDelay.interceptor';
-
 @Controller('users')
 export class UserController {
   constructor(
@@ -56,6 +56,7 @@ export class UserController {
   }
 
   @Post()
+  @Public()
   @UseInterceptors(AuthDelayInterceptor)
   async registerUser(
     @Body() registerDto: RegisterUserRequestDto,
