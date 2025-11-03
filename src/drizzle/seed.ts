@@ -60,27 +60,26 @@ async function seedPlaces() {
 async function seedUsers() {
   console.log('👥 Seeding users...');
 
-  const passwordHash = await hashPassword('12345678');
   await db.insert(schema.users).values([
     {
       id: 1,
       name: 'Thomas Aelbrecht',
       email: 'thomas.aelbrecht@hogent.be',
-      passwordHash: passwordHash,
+      passwordHash: await hashPassword('12345678'),
       roles: [Role.ADMIN, Role.USER],
     },
     {
       id: 2,
       name: 'Pieter Van Der Helst',
       email: 'pieter.vanderhelst@hogent.be',
-      passwordHash: passwordHash,
+      passwordHash: await hashPassword('12345678'),
       roles: [Role.USER],
     },
     {
       id: 3,
       name: 'Karine Samyn',
       email: 'karine.samyn@hogent.be',
-      passwordHash: passwordHash,
+      passwordHash: await hashPassword('12345678'),
       roles: [Role.USER],
     },
   ]);
