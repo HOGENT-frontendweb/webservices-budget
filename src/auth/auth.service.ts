@@ -40,26 +40,15 @@ export class AuthService {
   }
 
   private signJwt(user: User): string {
-    const authConfig = this.configService.get<AuthConfig>('auth')!;
-
-    return this.jwtService.sign(
-      { sub: user.id, email: user.email, roles: user.roles },
-      {
-        secret: authConfig.jwt.secret,
-        audience: authConfig.jwt.audience,
-        issuer: authConfig.jwt.issuer,
-        expiresIn: authConfig.jwt.expirationInterval,
-      },
-    );
+    return this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      roles: user.roles,
+    });
   }
 
   async verifyJwt(token: string): Promise<JwtPayload> {
-    const authConfig = this.configService.get<AuthConfig>('auth')!;
-    const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
-      secret: authConfig.jwt.secret,
-      audience: authConfig.jwt.audience,
-      issuer: authConfig.jwt.issuer,
-    });
+    const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
 
     if (!payload) {
       throw new UnauthorizedException('Invalid authentication token');

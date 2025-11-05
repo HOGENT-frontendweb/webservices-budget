@@ -8,8 +8,8 @@ import { AuthDelayInterceptor } from '../auth/interceptors/authDelay.interceptor
 export class SessionController {
   constructor(private authService: AuthService) {}
 
-  @Public()
   @Post()
+  @Public()
   @UseInterceptors(AuthDelayInterceptor)
   async signIn(@Body() loginDto: LoginRequestDto): Promise<LoginResponseDto> {
     const token = await this.authService.login(loginDto);

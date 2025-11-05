@@ -10,7 +10,6 @@ import {
   Put,
   UseGuards,
   UseInterceptors,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { PlaceService } from '../place/place.service';
 import { PlaceResponseDto } from '../place/place.dto';
@@ -87,8 +86,11 @@ export class UserController {
 
   @Get('/:id/favoriteplaces')
   async getFavoritePlaces(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUserIdPipe) id: 'me' | number,
+    @CurrentUser() user: Session,
   ): Promise<PlaceResponseDto[]> {
-    return this.placeService.getFavoritePlacesByUserId(id);
+    return this.placeService.getFavoritePlacesByUserId(
+      id === 'me' ? user.id : id,
+    );
   }
 }

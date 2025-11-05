@@ -55,11 +55,15 @@ export class UserService {
     id: number,
     changes: UpdateUserRequestDto,
   ): Promise<PublicUserResponseDto> {
-    await this.db.update(users).set(changes).where(eq(users.id, id));
+    const [result] = await this.db
+      .update(users)
+      .set(changes)
+      .where(eq(users.id, id));
 
-    const user = await this.getById(id);
-    return plainToInstance(PublicUserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+    if (result.affectedRows === 0) {
+      throw new NotFoundException('No user with this id exists');
+    }
+
+    return this.getById(id);
   }
 }
