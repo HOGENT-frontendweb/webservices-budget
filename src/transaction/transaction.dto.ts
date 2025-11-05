@@ -1,6 +1,6 @@
 import { PlaceResponseDto } from '../place/place.dto';
 import { PublicUserResponseDto } from '../user/user.dto';
-import { Min, IsDate, MaxDate, IsPositive, IsInt } from 'class-validator';
+import { Min, IsDate, MaxDate, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class TransactionListResponseDto {
@@ -20,7 +20,7 @@ export class CreateTransactionRequestDto {
   @Min(1)
   placeId: number;
 
-  @IsPositive()
+  @IsInt()
   amount: number;
 
   @Type(() => Date)
