@@ -4,13 +4,12 @@ import {
   UpdatePlaceRequestDto,
   PlaceListResponseDto,
   PlaceDetailResponseDto,
-  PlaceResponseDto,
 } from './place.dto';
 import {
   InjectDrizzle,
   type DatabaseProvider,
 } from '../drizzle/drizzle.provider';
-import { eq } from 'drizzle-orm';
+import { eq, getTableColumns } from 'drizzle-orm';
 import { places, userFavoritePlaces } from '../drizzle/schema';
 
 @Injectable()
@@ -71,11 +70,15 @@ export class PlaceService {
     }
   }
 
-  async getFavoritePlacesByUserId(userId: number): Promise<PlaceResponseDto[]> {
-    const favoritePlaces = await this.db.query.userFavoritePlaces.findMany({
-      where: eq(userFavoritePlaces.userId, userId),
-      with: { place: true },
-    });
-    return favoritePlaces.map((fav) => fav.place);
+  async getFavoritePlacesByUserId(
+    userId: number,
+  ): Promise<PlaceListResponseDto> {
+    const items = await this.db
+      .select(getTableColumns(places))
+      .from(userFavoritePlaces)
+      .innerJoin(places, eq(places.id, userFavoritePlaces.placeId))
+      .where(eq(userFavoritePlaces.userId, userId));
+
+    return { items };
   }
 }
