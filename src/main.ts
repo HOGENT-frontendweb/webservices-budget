@@ -10,6 +10,7 @@ import {
 import CustomLogger from './core/customLogger';
 import { HttpExceptionFilter } from './lib/http-exception.filter';
 import { DrizzleQueryErrorFilter } from './drizzle/drizzle-query-error.filter';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -56,6 +57,17 @@ async function bootstrap() {
     origin: cors.origins,
     maxAge: cors.maxAge,
   });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Budget Web Services')
+    .setDescription('The Budget API application')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(port);
 }

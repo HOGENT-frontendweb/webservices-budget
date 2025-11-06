@@ -19,11 +19,23 @@ import {
 import { TransactionService } from './transaction.service';
 import { type Session } from '../types/auth';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
+import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Transactions')
+@ApiBearerAuth()
+@ApiResponse({
+  status: 401,
+  description: 'Unauthorized - you need to be signed in',
+})
 @Controller('transactions')
 export class TransactionController {
   constructor(private transactionService: TransactionService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get all transactions',
+    type: TransactionListResponseDto,
+  })
   @Get()
   async getAllTransactions(
     @CurrentUser() user: Session,
@@ -31,6 +43,11 @@ export class TransactionController {
     return await this.transactionService.getAll(user.id, user.roles);
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Create transaction',
+    type: TransactionResponseDto,
+  })
   @Post()
   async createTransaction(
     @CurrentUser() user: Session,
@@ -39,6 +56,11 @@ export class TransactionController {
     return this.transactionService.create(user.id, createTransactionDto);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get transaction by Id',
+    type: TransactionResponseDto,
+  })
   @Get(':id')
   async getTransactionById(
     @Param('id', ParseIntPipe) id: number,
@@ -47,6 +69,11 @@ export class TransactionController {
     return this.transactionService.getById(id, user.id, user.roles);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Update transaction',
+    type: TransactionResponseDto,
+  })
   @Put(':id')
   async updateTransaction(
     @Param('id', ParseIntPipe) id: number,
@@ -60,6 +87,10 @@ export class TransactionController {
     );
   }
 
+  @ApiResponse({
+    status: 204,
+    description: 'Delete transaction',
+  })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTransaction(
