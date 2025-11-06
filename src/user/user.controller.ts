@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PlaceService } from '../place/place.service';
-import { PlaceResponseDto } from '../place/place.dto';
+import { PlaceListResponseDto } from '../place/place.dto';
 import {
   UpdateUserRequestDto,
   UserListResponseDto,
@@ -30,6 +30,10 @@ import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { type Session } from '../types/auth';
 import { ParseUserIdPipe } from '../auth/decorators/parseUserId.pipe';
 import { AuthDelayInterceptor } from '../auth/interceptors/authDelay.interceptor';
+import { ApiTags, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
+
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(
@@ -38,12 +42,43 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get all users',
+    type: UserListResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - you need to be signed in',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
   @Get()
   @Roles(Role.ADMIN)
   async getAllUsers(): Promise<UserListResponseDto> {
     return this.userService.getAll();
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get user by ID',
+    type: PublicUserResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - you need to be signed in',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    example: 'me',
+  })
   @Get(':id')
   @UseGuards(CheckUserAccessGuard)
   async getUserById(
@@ -54,6 +89,15 @@ export class UserController {
     return await this.userService.getById(userId);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Register',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+  })
   @Post()
   @Public()
   @UseInterceptors(AuthDelayInterceptor)
@@ -64,6 +108,28 @@ export class UserController {
     return { token };
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Update user by ID',
+    type: PublicUserResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - you need to be signed in',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    example: 'me',
+  })
   @Put(':id')
   @UseGuards(CheckUserAccessGuard)
   async updateUserById(
@@ -74,6 +140,23 @@ export class UserController {
     return await this.userService.updateById(id === 'me' ? user.id : id, dto);
   }
 
+  @ApiResponse({
+    status: 204,
+    description: 'Delete user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - you need to be signed in',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    example: 'me',
+  })
   @Delete(':id')
   @UseGuards(CheckUserAccessGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -84,11 +167,25 @@ export class UserController {
     return await this.userService.deleteById(id === 'me' ? user.id : id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Get the favorite places of a user',
+    type: PlaceListResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - you need to be signed in',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    example: 'me',
+  })
   @Get('/:id/favoriteplaces')
   async getFavoritePlaces(
     @Param('id', ParseUserIdPipe) id: 'me' | number,
     @CurrentUser() user: Session,
-  ): Promise<PlaceResponseDto[]> {
+  ): Promise<PlaceListResponseDto> {
     return this.placeService.getFavoritePlacesByUserId(
       id === 'me' ? user.id : id,
     );

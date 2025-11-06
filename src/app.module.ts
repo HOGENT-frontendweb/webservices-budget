@@ -1,6 +1,4 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
 import { PlaceModule } from './place/place.module';
 import { ConfigModule } from '@nestjs/config';
@@ -28,7 +26,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     AuthModule,
     SessionModule,
   ],
-  controllers: [AppController, HealthController],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,
@@ -38,7 +36,6 @@ import { RolesGuard } from './auth/guards/roles.guard';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    AppService,
   ],
 })
 export class AppModule implements NestModule {
