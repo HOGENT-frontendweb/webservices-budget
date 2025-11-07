@@ -11,7 +11,7 @@ declare global {
   var mySQLContainer: StartedMySqlContainer;
 }
 
-module.exports = async () => {
+export default async () => {
   console.log('🚢 Pulling and starting MySQL container');
   const container = await new MySqlContainer('mysql:8.0').start();
   process.env.DATABASE_URL = container.getConnectionUri();
