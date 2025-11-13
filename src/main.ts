@@ -10,6 +10,7 @@ import {
 import CustomLogger from './core/customLogger';
 import { HttpExceptionFilter } from './lib/http-exception.filter';
 import { DrizzleQueryErrorFilter } from './drizzle/drizzle-query-error.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -56,6 +57,8 @@ async function bootstrap() {
     origin: cors.origins,
     maxAge: cors.maxAge,
   });
+
+  app.use(helmet());
 
   await app.listen(port);
 }
