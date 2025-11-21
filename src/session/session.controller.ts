@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseInterceptors,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { LoginRequestDto, LoginResponseDto } from './session.dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -25,6 +32,7 @@ export class SessionController {
   })
   @Post()
   @Public()
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(AuthDelayInterceptor)
   async signIn(@Body() loginDto: LoginRequestDto): Promise<LoginResponseDto> {
     const token = await this.authService.login(loginDto);
