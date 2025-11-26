@@ -9,10 +9,9 @@ This is the backend used in lessons Web Services.
 - [MySQL v8](https://dev.mysql.com/downloads/windows/installer/8.0.html) (no Oracle account needed, click the tiny link below the grey box)
 - [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) (no Oracle account needed, click the tiny link below the grey box)
 
-## Before starting this project
+## Before starting/testing this project
 
-Create a `.env` (development) file with the following template.
-Complete the environment variables with your secrets, credentials, etc.
+Create a `.env` (development) or `.env.test` (testing) file with the following template. Complete the environment variables with your secrets, credentials, etc.
 
 ```bash
 # General configuration
@@ -34,6 +33,9 @@ AUTH_HASH_LENGTH=32
 AUTH_HASH_TIME_COST=6
 AUTH_HASH_MEMORY_COST=65536
 AUTH_MAX_DELAY=2000
+
+# Logging configuration
+LOG_DISABLED=false
 ```
 
 ## Start this project
@@ -54,3 +56,14 @@ AUTH_MAX_DELAY=2000
 - Create a database with the name given in the environment variable
 - Migrate the database: `pnpm db:migrate`
 - Start the production server: `pnpm start`
+
+### Test this project
+
+The test database will be created and dropped each time the tests are run! You don't have to specify the  DATABASE_URL in the `.env.test` file.
+
+- Install all dependencies: `pnpm install`
+- Make sure `.env.test` exists (it's recommended to disabled logging in the testing environment)
+- Run the tests: `pnpm test:e2e`
+  - This will start a new server for each test suite that runs, you won't see any output as logging is disabled to make output more clean.
+  - To enable logging change the config parameter `LOG_DISABLED` to `false`.
+  - The user suite will take 'long' (around 6s) to complete, this is normal as many cryptographic operations are being performed.

@@ -27,13 +27,13 @@ describe('Sessions', () => {
   });
 
   describe('POST /api/sessions', () => {
-    it('should 201 and return the token when succesfully logged in', async () => {
+    it('should 200 and return the token when succesfully logged in', async () => {
       const response = await request(app.getHttpServer()).post(url).send({
         email: 'test.user@hogent.be',
         password: '12345678',
       });
 
-      expect(response.statusCode).toBe(201);
+      expect(response.statusCode).toBe(200);
       expect(response.body.token).toBeTruthy();
     });
 

@@ -2,10 +2,7 @@ import {
   MySqlContainer,
   type StartedMySqlContainer,
 } from '@testcontainers/mysql';
-import { drizzle } from 'drizzle-orm/mysql2';
-import { migrate } from 'drizzle-orm/mysql2/migrator';
-import mysql from 'mysql2/promise';
-import * as path from 'path';
+import { execSync } from 'child_process';
 
 declare global {
   var mySQLContainer: StartedMySqlContainer;
@@ -16,16 +13,8 @@ export default async () => {
   const container = await new MySqlContainer('mysql:8.0').start();
   process.env.DATABASE_URL = container.getConnectionUri();
   globalThis.mySQLContainer = container;
+
   console.log('✅ MySQL container started');
-
-  const connection = await mysql.createConnection(process.env.DATABASE_URL);
-  const db = drizzle(connection);
-
-  console.log('⏳ Running migrations...');
-  await migrate(db, {
-    migrationsFolder: path.resolve(__dirname, '../migrations'),
-  });
+  execSync('pnpm db:migrate');
   console.log('✅ Migrations completed!');
-
-  await connection.end();
 };
