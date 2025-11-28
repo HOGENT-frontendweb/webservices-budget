@@ -19,7 +19,7 @@ export class DrizzleModule implements OnModuleDestroy, OnModuleInit {
   async onModuleInit() {
     this.logger.log('⏳ Running migrations...');
     await migrate(this.db, {
-      migrationsFolder: path.resolve(__dirname, '../../migrations'),
+      migrationsFolder: path.resolve(__dirname, '../../../migrations'),
     });
     this.logger.log('✅ Migrations completed!');
   }
