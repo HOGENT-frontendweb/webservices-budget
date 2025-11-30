@@ -5,7 +5,7 @@ import {
   drizzleProvider,
   InjectDrizzle,
 } from './drizzle.provider';
-import path from 'path';
+import path from 'node:path';
 import { migrate } from 'drizzle-orm/mysql2/migrator';
 
 @Module({
