@@ -25,7 +25,7 @@ RUN corepack enable
 RUN apk add --no-cache libc6-compat
 
 
-FROM base AS devDeps
+FROM base AS dev-deps
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
@@ -33,7 +33,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 
-FROM base AS prodDeps
+FROM base AS prod-deps
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
@@ -43,7 +43,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 
 FROM base AS builder
 WORKDIR /app
-COPY --from=devDeps /app/node_modules ./node_modules
+COPY --from=dev-deps /app/node_modules ./node_modules
 COPY . .
 
 RUN pnpm build
@@ -53,7 +53,7 @@ FROM base AS runner
 
 WORKDIR /app
 
-COPY --from=prodDeps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/migrations ./migrations
 
