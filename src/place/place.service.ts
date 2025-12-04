@@ -38,6 +38,7 @@ export class PlaceService {
             user: {
               columns: {
                 id: true,
+                name: true,
                 email: true,
               },
             },
