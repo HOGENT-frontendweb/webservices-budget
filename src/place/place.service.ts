@@ -29,8 +29,18 @@ export class PlaceService {
       where: eq(places.id, id),
       with: {
         transactions: {
+          columns: {
+            id: true,
+            amount: true,
+            date: true,
+          },
           with: {
-            user: true,
+            user: {
+              columns: {
+                id: true,
+                email: true,
+              },
+            },
             place: true,
           },
         },
