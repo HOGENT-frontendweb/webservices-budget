@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 
-import { CreatePlaceRequestDto } from './place.dto';
+import { CreatePlaceRequestDto, UpdatePlaceRequestDto } from './place.dto';
 
 @Controller('places')
 export class PlaceController {
@@ -17,5 +26,18 @@ export class PlaceController {
   @Get(':id')
   getPlaceById(@Param('id') id: string): string {
     return `This action returns a #${id} place`;
+  }
+
+  @Put(':id')
+  updatePlace(
+    @Param('id') id: string,
+    @Body() updatePlaceDto: UpdatePlaceRequestDto,
+  ) {
+    return `This action updates the place ${updatePlaceDto.name} with #${id}`;
+  }
+
+  @Delete(':id')
+  deletePlace(@Param('id') id: string) {
+    return `This action removes the place with id #${id}`;
   }
 }
