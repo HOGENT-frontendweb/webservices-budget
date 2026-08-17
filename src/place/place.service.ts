@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PLACES, Place } from '../data/mock_data';
 import {
   CreatePlaceRequestDto,
@@ -17,7 +17,7 @@ export class PlaceService {
     const place = PLACES.find((item: Place) => item.id === id);
 
     if (!place) {
-      throw new Error('No place with this id exists');
+      throw new NotFoundException(`No place with this id exists`);
     }
 
     return place;
