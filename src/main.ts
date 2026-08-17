@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ServerConfig } from './config/configuration';
+import { CorsConfig, ServerConfig } from './config/configuration';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
@@ -10,10 +10,11 @@ async function bootstrap() {
 
   const config = app.get(ConfigService<ServerConfig>);
   const port = config.get<number>('port')!;
+  const cors = config.get<CorsConfig>('cors')!;
 
   app.enableCors({
-    origin: ['http://localhost:5173'],
-    maxAge: 3 * 60 * 60,
+    origin: cors.origins,
+    maxAge: cors.maxAge,
   });
 
   await app.listen(port);
