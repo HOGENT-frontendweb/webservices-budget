@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 
-import { CreatePlaceRequestDto, UpdatePlaceRequestDto } from './place.dto';
-import { PaginationQuery } from '../common/common.dto';
+import {
+  CreatePlaceRequestDto,
+  PlaceListResponseDto,
+  PlaceResponseDto,
+  UpdatePlaceRequestDto,
+} from './place.dto';
 import { PlaceService } from './place.service';
 
 @Controller('places')
@@ -18,19 +21,18 @@ export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
   @Get()
-  getAllPlaces(@Query() paginationQuery: PaginationQuery) {
-    const { page, limit } = paginationQuery;
-    return `This action returns all places. Limit ${limit}, page: ${page}`;
+  getAllPlaces(): PlaceListResponseDto {
+    return this.placeService.getAll();
   }
 
   @Post()
-  createPlace(@Body() createPlaceDto: CreatePlaceRequestDto): string {
-    return `This action adds a new place ${createPlaceDto.name}`;
+  createPlace(@Body() createPlaceDto: CreatePlaceRequestDto): PlaceResponseDto {
+    return this.placeService.create(createPlaceDto);
   }
 
   @Get(':id')
-  getPlaceById(@Param('id') id: string): string {
-    return `This action returns a #${id} place`;
+  getPlaceById(@Param('id') id: string): PlaceResponseDto {
+    return this.placeService.getById(Number(id));
   }
 
   @Put(':id')
