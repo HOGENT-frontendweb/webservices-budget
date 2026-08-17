@@ -11,9 +11,12 @@ import {
 
 import { CreatePlaceRequestDto, UpdatePlaceRequestDto } from './place.dto';
 import { PaginationQuery } from '../common/common.dto';
+import { PlaceService } from './place.service';
 
 @Controller('places')
 export class PlaceController {
+  constructor(private readonly placeService: PlaceService) {}
+
   @Get()
   getAllPlaces(@Query() paginationQuery: PaginationQuery) {
     const { page, limit } = paginationQuery;
