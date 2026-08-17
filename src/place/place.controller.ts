@@ -10,11 +10,13 @@ import {
 } from '@nestjs/common';
 
 import { CreatePlaceRequestDto, UpdatePlaceRequestDto } from './place.dto';
+import { PaginationQuery } from '../common/common.dto';
 
 @Controller('places')
 export class PlaceController {
   @Get()
-  getAllPlaces(@Query('page') page = 1, @Query('limit') limit = 10) {
+  getAllPlaces(@Query() paginationQuery: PaginationQuery) {
+    const { page, limit } = paginationQuery;
     return `This action returns all places. Limit ${limit}, page: ${page}`;
   }
 
