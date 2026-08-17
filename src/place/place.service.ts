@@ -37,10 +37,18 @@ export class PlaceService {
     id: number,
     { name, rating }: UpdatePlaceRequestDto,
   ): PlaceResponseDto {
-    throw new Error('not yet implemented');
+    const existingPlace = this.getById(id);
+    if (existingPlace) {
+      existingPlace.name = name;
+      existingPlace.rating = rating;
+    }
+    return existingPlace;
   }
 
   deleteById(id: number): void {
-    throw new Error('not yet implemented');
+    const index = PLACES.findIndex((item: Place) => item.id === id);
+    if (index >= 0) {
+      PLACES.splice(index, 1);
+    }
   }
 }

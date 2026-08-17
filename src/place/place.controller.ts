@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -39,12 +41,13 @@ export class PlaceController {
   updatePlace(
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
-  ) {
-    return `This action updates the place ${updatePlaceDto.name} with #${id}`;
+  ): PlaceResponseDto {
+    return this.placeService.updateById(Number(id), updatePlaceDto);
   }
 
   @Delete(':id')
-  deletePlace(@Param('id') id: string) {
-    return `This action removes the place with id #${id}`;
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deletePlace(@Param('id') id: string): void {
+    this.placeService.deleteById(Number(id));
   }
 }
