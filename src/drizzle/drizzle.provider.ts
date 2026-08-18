@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
-import { drizzle } from 'drizzle-orm/mysql2';
+import { drizzle, MySql2Database } from 'drizzle-orm/mysql2';
 import * as mysql from 'mysql2/promise';
+import * as schema from './schema';
 import { DatabaseConfig, ServerConfig } from '../config/configuration';
 import { Inject } from '@nestjs/common';
 
@@ -20,7 +21,12 @@ export const drizzleProvider = [
           connectionLimit: 5,
         }),
         mode: 'default',
+        schema,
       });
     },
   },
 ];
+
+export type DatabaseProvider = MySql2Database<typeof schema> & {
+  $client: mysql.Pool;
+};
