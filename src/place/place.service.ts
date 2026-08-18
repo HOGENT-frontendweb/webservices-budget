@@ -46,22 +46,20 @@ export class PlaceService {
     return this.getById(newPlace.id);
   }
 
-  updateById(
+  async update(
     id: number,
-    { name, rating }: UpdatePlaceRequestDto,
-  ): PlaceResponseDto {
-    const existingPlace = this.getById(id);
-    if (existingPlace) {
-      existingPlace.name = name;
-      existingPlace.rating = rating;
-    }
-    return existingPlace;
+    changes: UpdatePlaceRequestDto,
+  ): Promise<PlaceResponseDto> {
+    await this.db.update(places).set(changes).where(eq(places.id, id));
+
+    return this.getById(id);
   }
 
-  deleteById(id: number): void {
-    const index = PLACES.findIndex((item: Place) => item.id === id);
-    if (index >= 0) {
-      PLACES.splice(index, 1);
+  async delete(id: number): Promise<void> {
+    const [result] = await this.db.delete(places).where(eq(places.id, id));
+
+    if (result.affectedRows === 0) {
+      throw new NotFoundException('No place with this id exists');
     }
   }
 }

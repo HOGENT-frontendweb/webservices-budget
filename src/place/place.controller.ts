@@ -40,16 +40,16 @@ export class PlaceController {
   }
 
   @Put(':id')
-  updatePlace(
+  async updatePlace(
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
-  ): PlaceResponseDto {
-    return this.placeService.updateById(Number(id), updatePlaceDto);
+  ): Promise<PlaceResponseDto> {
+    return this.placeService.update(Number(id), updatePlaceDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deletePlace(@Param('id') id: string): void {
-    this.placeService.deleteById(Number(id));
+  async deletePlace(@Param('id') id: string): Promise<void> {
+    return this.placeService.delete(Number(id));
   }
 }
