@@ -1,6 +1,6 @@
 export class CreatePlaceRequestDto {
   name: string;
-  rating: number;
+  rating: number | null;
 }
 
 export class UpdatePlaceRequestDto extends CreatePlaceRequestDto {}
