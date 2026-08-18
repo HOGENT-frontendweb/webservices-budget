@@ -23,17 +23,19 @@ export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
   @Get()
-  getAllPlaces(): PlaceListResponseDto {
+  async getAllPlaces(): Promise<PlaceListResponseDto> {
     return this.placeService.getAll();
   }
 
   @Post()
-  createPlace(@Body() createPlaceDto: CreatePlaceRequestDto): PlaceResponseDto {
+  async createPlace(
+    @Body() createPlaceDto: CreatePlaceRequestDto,
+  ): Promise<PlaceResponseDto> {
     return this.placeService.create(createPlaceDto);
   }
 
   @Get(':id')
-  getPlaceById(@Param('id') id: string): PlaceResponseDto {
+  async getPlaceById(@Param('id') id: string): Promise<PlaceResponseDto> {
     return this.placeService.getById(Number(id));
   }
 

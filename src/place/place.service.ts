@@ -6,15 +6,29 @@ import {
   PlaceListResponseDto,
   PlaceResponseDto,
 } from './place.dto';
+import {
+  type DatabaseProvider,
+  InjectDrizzle,
+} from '../drizzle/drizzle.provider';
+import { places } from '../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class PlaceService {
-  getAll(): PlaceListResponseDto {
-    return { items: PLACES };
+  constructor(
+    @InjectDrizzle()
+    private readonly db: DatabaseProvider,
+  ) {}
+
+  async getAll(): Promise<PlaceListResponseDto> {
+    const items = await this.db.query.places.findMany();
+    return { items };
   }
 
-  getById(id: number): PlaceResponseDto {
-    const place = PLACES.find((item: Place) => item.id === id);
+  async getById(id: number): Promise<PlaceResponseDto> {
+    const place = await this.db.query.places.findFirst({
+      where: eq(places.id, id),
+    });
 
     if (!place) {
       throw new NotFoundException(`No place with this id exists`);
@@ -23,14 +37,13 @@ export class PlaceService {
     return place;
   }
 
-  create({ name, rating }: CreatePlaceRequestDto): PlaceResponseDto {
-    const newplace = {
-      id: Math.max(...PLACES.map((item: Place) => item.id)) + 1,
-      name,
-      rating,
-    };
-    PLACES.push(newplace);
-    return newplace;
+  async create(place: CreatePlaceRequestDto): Promise<PlaceResponseDto> {
+    const [newPlace] = await this.db
+      .insert(places)
+      .values(place)
+      .$returningId();
+
+    return this.getById(newPlace.id);
   }
 
   updateById(
