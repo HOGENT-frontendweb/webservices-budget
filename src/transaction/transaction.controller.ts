@@ -37,7 +37,7 @@ export class TransactionController {
   async getTransactionById(
     @Param('id') id: string,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.getById(Number(id));
   }
 
   @Put(':id')

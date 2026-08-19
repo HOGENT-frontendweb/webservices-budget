@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateTransactionRequestDto,
   TransactionListResponseDto,
@@ -9,7 +9,7 @@ import {
   type DatabaseProvider,
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
-import { desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { transactions } from '../drizzle/schema';
 
 @Injectable()
@@ -37,7 +37,24 @@ export class TransactionService {
   }
 
   async getById(id: number): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    const transaction = await this.db.query.transactions.findFirst({
+      columns: {
+        id: true,
+        amount: true,
+        date: true,
+      },
+      where: eq(transactions.id, id),
+      with: {
+        place: true,
+        user: true,
+      },
+    });
+
+    if (!transaction) {
+      throw new NotFoundException(`No transaction with this id exists`);
+    }
+
+    return transaction;
   }
 
   async create(
