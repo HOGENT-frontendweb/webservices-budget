@@ -79,6 +79,12 @@ export class TransactionService {
   }
 
   async deleteById(id: number): Promise<void> {
-    throw new Error('Not implemented');
+    const [result] = await this.db
+      .delete(transactions)
+      .where(eq(transactions.id, id));
+
+    if (result.affectedRows === 0) {
+      throw new NotFoundException('No transaction with this id exists');
+    }
   }
 }

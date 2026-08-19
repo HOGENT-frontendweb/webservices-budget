@@ -51,6 +51,6 @@ export class TransactionController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTransaction(@Param('id') id: string): Promise<void> {
-    throw new Error('Not implemented');
+    return this.transactionService.deleteById(Number(id));
   }
 }
