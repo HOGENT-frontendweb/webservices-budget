@@ -30,7 +30,7 @@ export class TransactionController {
   async createTransaction(
     @Body() createTransactionDto: CreateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.create(createTransactionDto);
   }
 
   @Get(':id')

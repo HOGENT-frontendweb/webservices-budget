@@ -60,7 +60,15 @@ export class TransactionService {
   async create(
     dto: CreateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    const [newTransaction] = await this.db
+      .insert(transactions)
+      .values({
+        ...dto,
+        date: new Date(dto.date),
+      })
+      .$returningId();
+
+    return this.getById(newTransaction.id);
   }
 
   async updateById(
