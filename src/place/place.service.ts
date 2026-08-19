@@ -4,12 +4,13 @@ import {
   UpdatePlaceRequestDto,
   PlaceListResponseDto,
   PlaceDetailResponseDto,
+  PlaceResponseDto,
 } from './place.dto';
 import {
   type DatabaseProvider,
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
-import { places, transactions } from '../drizzle/schema';
+import { places, transactions, userFavoritePlaces } from '../drizzle/schema';
 import { desc, eq } from 'drizzle-orm';
 
 @Injectable()
@@ -69,5 +70,13 @@ export class PlaceService {
     if (result.affectedRows === 0) {
       throw new NotFoundException('No place with this id exists');
     }
+  }
+
+  async getFavoritePlacesByUserId(userId: number): Promise<PlaceResponseDto[]> {
+    const favoritePlaces = await this.db.query.userFavoritePlaces.findMany({
+      where: eq(userFavoritePlaces.userId, userId),
+      with: { place: true },
+    });
+    return favoritePlaces.map((fav) => fav.place);
   }
 }

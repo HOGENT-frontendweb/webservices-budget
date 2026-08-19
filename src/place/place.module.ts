@@ -7,5 +7,6 @@ import { DrizzleModule } from '../drizzle/drizzle.module';
   imports: [DrizzleModule],
   controllers: [PlaceController],
   providers: [PlaceService],
+  exports: [PlaceService],
 })
 export class PlaceModule {}
