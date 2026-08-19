@@ -15,12 +15,15 @@ import {
   TransactionResponseDto,
   TransactionListResponseDto,
 } from './transaction.dto';
+import { TransactionService } from './transaction.service';
 
 @Controller('transactions')
 export class TransactionController {
+  constructor(private transactionService: TransactionService) {}
+
   @Get()
   async getAllTransactions(): Promise<TransactionListResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.getAll();
   }
 
   @Post()
