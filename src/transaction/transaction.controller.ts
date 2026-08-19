@@ -45,7 +45,7 @@ export class TransactionController {
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    throw new Error('Not implemented');
+    return this.transactionService.updateById(Number(id), updateTransactionDto);
   }
 
   @Delete(':id')
