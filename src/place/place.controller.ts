@@ -12,8 +12,8 @@ import {
 
 import {
   CreatePlaceRequestDto,
+  PlaceDetailResponseDto,
   PlaceListResponseDto,
-  PlaceResponseDto,
   UpdatePlaceRequestDto,
 } from './place.dto';
 import { PlaceService } from './place.service';
@@ -30,12 +30,12 @@ export class PlaceController {
   @Post()
   async createPlace(
     @Body() createPlaceDto: CreatePlaceRequestDto,
-  ): Promise<PlaceResponseDto> {
+  ): Promise<PlaceDetailResponseDto> {
     return this.placeService.create(createPlaceDto);
   }
 
   @Get(':id')
-  async getPlaceById(@Param('id') id: string): Promise<PlaceResponseDto> {
+  async getPlaceById(@Param('id') id: string): Promise<PlaceDetailResponseDto> {
     return this.placeService.getById(Number(id));
   }
 
@@ -43,7 +43,7 @@ export class PlaceController {
   async updatePlace(
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
-  ): Promise<PlaceResponseDto> {
+  ): Promise<PlaceDetailResponseDto> {
     return this.placeService.update(Number(id), updatePlaceDto);
   }
 

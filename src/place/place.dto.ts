@@ -1,3 +1,5 @@
+import { TransactionResponseDto } from '../transaction/transaction.dto';
+
 export class CreatePlaceRequestDto {
   name: string;
   rating: number | null;
@@ -11,4 +13,8 @@ export class PlaceResponseDto extends CreatePlaceRequestDto {
 
 export class PlaceListResponseDto {
   items: PlaceResponseDto[];
+}
+
+export class PlaceDetailResponseDto extends PlaceResponseDto {
+  transactions: TransactionResponseDto[];
 }

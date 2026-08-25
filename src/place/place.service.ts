@@ -1,17 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PLACES, Place } from '../data/mock_data';
 import {
   CreatePlaceRequestDto,
   UpdatePlaceRequestDto,
   PlaceListResponseDto,
-  PlaceResponseDto,
+  PlaceDetailResponseDto,
 } from './place.dto';
 import {
   type DatabaseProvider,
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
-import { places } from '../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { places, transactions } from '../drizzle/schema';
+import { desc, eq } from 'drizzle-orm';
 
 @Injectable()
 export class PlaceService {
@@ -25,9 +24,18 @@ export class PlaceService {
     return { items };
   }
 
-  async getById(id: number): Promise<PlaceResponseDto> {
+  async getById(id: number): Promise<PlaceDetailResponseDto> {
     const place = await this.db.query.places.findFirst({
       where: eq(places.id, id),
+      with: {
+        transactions: {
+          with: {
+            user: true,
+            place: true,
+          },
+          orderBy: desc(transactions.date),
+        },
+      },
     });
 
     if (!place) {
@@ -37,7 +45,7 @@ export class PlaceService {
     return place;
   }
 
-  async create(place: CreatePlaceRequestDto): Promise<PlaceResponseDto> {
+  async create(place: CreatePlaceRequestDto): Promise<PlaceDetailResponseDto> {
     const [newPlace] = await this.db
       .insert(places)
       .values(place)
@@ -49,7 +57,7 @@ export class PlaceService {
   async update(
     id: number,
     changes: UpdatePlaceRequestDto,
-  ): Promise<PlaceResponseDto> {
+  ): Promise<PlaceDetailResponseDto> {
     await this.db.update(places).set(changes).where(eq(places.id, id));
 
     return this.getById(id);
