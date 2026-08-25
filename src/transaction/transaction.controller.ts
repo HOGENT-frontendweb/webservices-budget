@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   CreateTransactionRequestDto,
@@ -22,8 +23,11 @@ export class TransactionController {
   constructor(private transactionService: TransactionService) {}
 
   @Get()
-  async getAllTransactions(): Promise<TransactionListResponseDto> {
-    return this.transactionService.getAll();
+  async getAllTransactions(
+    @Query('pageSize') pageSize: string = '10',
+    @Query('page') page: string = '1',
+  ): Promise<TransactionListResponseDto> {
+    return await this.transactionService.getAll(Number(page), Number(pageSize));
   }
 
   @Post()

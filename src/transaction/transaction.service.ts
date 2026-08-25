@@ -9,7 +9,7 @@ import {
   type DatabaseProvider,
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { transactions } from '../drizzle/schema';
 
 @Injectable()
@@ -19,21 +19,34 @@ export class TransactionService {
     private readonly db: DatabaseProvider,
   ) {}
 
-  async getAll(): Promise<TransactionListResponseDto> {
-    const items = await this.db.query.transactions.findMany({
-      columns: {
-        id: true,
-        amount: true,
-        date: true,
-      },
-      with: {
-        place: true,
-        user: true,
-      },
-      orderBy: desc(transactions.date),
-    });
+  async getAll(
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<TransactionListResponseDto> {
+    const [countResults, items] = await Promise.all([
+      this.db.select({ count: count() }).from(transactions),
+      this.db.query.transactions.findMany({
+        columns: {
+          id: true,
+          amount: true,
+          date: true,
+        },
+        with: {
+          place: true,
+          user: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: [desc(transactions.date), asc(transactions.id)],
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      }),
+    ]);
 
-    return { items };
+    return { items, page, pageSize, total: countResults[0].count };
   }
 
   async getById(id: number): Promise<TransactionResponseDto> {

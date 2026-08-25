@@ -3,6 +3,9 @@ import { PublicUserResponseDto } from '../user/user.dto';
 
 export class TransactionListResponseDto {
   items: TransactionResponseDto[];
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
 export class TransactionResponseDto {
