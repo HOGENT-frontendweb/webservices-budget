@@ -37,7 +37,6 @@ DATABASE_URL=mysql://devusr:devpwd@localhost:3306/budget
 - Install all dependencies: `pnpm install`
 - Make sure a `.env` exists (see above)
 - Create a database with the name given in the `.env` file
-- Migrate the database: `pnpm db:migrate`
 - Seed the database: `pnpm db:seed`
 - Start the development server: `pnpm start:dev`
 
