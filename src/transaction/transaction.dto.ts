@@ -1,6 +1,6 @@
 import { PlaceResponseDto } from '../place/place.dto';
-import { PublicUserResponseDto } from '../user/user.dto';
 import { PaginationQuery } from '../common/common.dto';
+import { UserResponseDto } from '../user/user.dto';
 
 export class TransactionListResponseDto {
   items: TransactionResponseDto[];
@@ -13,7 +13,7 @@ export class TransactionResponseDto {
   id: number;
   amount: number;
   date: Date;
-  user: PublicUserResponseDto;
+  user: UserResponseDto;
   place: PlaceResponseDto;
 }
 
