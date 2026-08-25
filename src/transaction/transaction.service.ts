@@ -13,6 +13,10 @@ import {
 import { and, asc, count, desc, eq, like } from 'drizzle-orm';
 import { places, transactions, users } from '../drizzle/schema';
 
+interface GetAllTransactionFilters {
+  placeId?: number;
+}
+
 @Injectable()
 export class TransactionService {
   constructor(
@@ -20,12 +24,16 @@ export class TransactionService {
     private readonly db: DatabaseProvider,
   ) {}
 
-  async getAll({
-    page = 1,
-    pageSize = 10,
-    search = '',
-  }: TransactionQueryDto): Promise<TransactionListResponseDto> {
+  async getAll(
+    { page = 1, pageSize = 10, search = '' }: TransactionQueryDto,
+    filters?: GetAllTransactionFilters,
+  ): Promise<TransactionListResponseDto> {
     const whereConditions = [];
+
+    if (filters?.placeId) {
+      whereConditions.push(eq(transactions.placeId, filters.placeId));
+    }
+
     if (search) {
       whereConditions.push(like(places.name, `%${search}%`));
     }

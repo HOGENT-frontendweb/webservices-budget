@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 
 import {
@@ -17,10 +18,16 @@ import {
   UpdatePlaceRequestDto,
 } from './place.dto';
 import { PlaceService } from './place.service';
+import { PaginationQuery } from '../common/common.dto';
+import { TransactionListResponseDto } from '../transaction/transaction.dto';
+import { TransactionService } from '../transaction/transaction.service';
 
 @Controller('places')
 export class PlaceController {
-  constructor(private readonly placeService: PlaceService) {}
+  constructor(
+    private readonly placeService: PlaceService,
+    private transactionService: TransactionService,
+  ) {}
 
   @Get()
   async getAllPlaces(): Promise<PlaceListResponseDto> {
@@ -51,5 +58,15 @@ export class PlaceController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePlace(@Param('id') id: string): Promise<void> {
     return this.placeService.delete(Number(id));
+  }
+
+  @Get('/:id/transactions')
+  async getTransactionsByPlaceId(
+    @Param('id') id: string,
+    @Query() paginationQuery: PaginationQuery,
+  ): Promise<TransactionListResponseDto> {
+    return this.transactionService.getAll(paginationQuery, {
+      placeId: Number(id),
+    });
   }
 }
