@@ -15,6 +15,7 @@ import {
   UpdateTransactionRequestDto,
   TransactionResponseDto,
   TransactionListResponseDto,
+  TransactionQueryDto,
 } from './transaction.dto';
 import { TransactionService } from './transaction.service';
 
@@ -24,10 +25,9 @@ export class TransactionController {
 
   @Get()
   async getAllTransactions(
-    @Query('pageSize') pageSize: string = '10',
-    @Query('page') page: string = '1',
+    @Query() query: TransactionQueryDto,
   ): Promise<TransactionListResponseDto> {
-    return await this.transactionService.getAll(Number(page), Number(pageSize));
+    return await this.transactionService.getAll(query);
   }
 
   @Post()

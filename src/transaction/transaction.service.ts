@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateTransactionRequestDto,
   TransactionListResponseDto,
+  TransactionQueryDto,
   TransactionResponseDto,
   UpdateTransactionRequestDto,
 } from './transaction.dto';
@@ -9,8 +10,8 @@ import {
   type DatabaseProvider,
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
-import { and, asc, count, desc, eq } from 'drizzle-orm';
-import { transactions } from '../drizzle/schema';
+import { and, asc, count, desc, eq, like } from 'drizzle-orm';
+import { places, transactions, users } from '../drizzle/schema';
 
 @Injectable()
 export class TransactionService {
@@ -19,34 +20,52 @@ export class TransactionService {
     private readonly db: DatabaseProvider,
   ) {}
 
-  async getAll(
-    page: number = 1,
-    pageSize: number = 10,
-  ): Promise<TransactionListResponseDto> {
-    const [countResults, items] = await Promise.all([
-      this.db.select({ count: count() }).from(transactions),
-      this.db.query.transactions.findMany({
-        columns: {
-          id: true,
-          amount: true,
-          date: true,
-        },
-        with: {
-          place: true,
-          user: {
-            columns: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-        orderBy: [desc(transactions.date), asc(transactions.id)],
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-      }),
-    ]);
+  async getAll({
+    page = 1,
+    pageSize = 10,
+    search = '',
+  }: TransactionQueryDto): Promise<TransactionListResponseDto> {
+    const whereConditions = [];
+    if (search) {
+      whereConditions.push(like(places.name, `%${search}%`));
+    }
 
-    return { items, page, pageSize, total: countResults[0].count };
+    const whereClause =
+      whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+    const countQuery = this.db
+      .select({ count: count() })
+      .from(transactions)
+      .innerJoin(places, eq(transactions.placeId, places.id))
+      .where(whereClause);
+
+    const dataQuery = this.db
+      .select({
+        id: transactions.id,
+        amount: transactions.amount,
+        date: transactions.date,
+        place: places,
+        user: {
+          id: users.id,
+          name: users.name,
+        },
+      })
+      .from(transactions)
+      .innerJoin(places, eq(transactions.placeId, places.id))
+      .innerJoin(users, eq(transactions.userId, users.id))
+      .where(whereClause)
+      .orderBy(desc(transactions.date), asc(transactions.id))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+
+    const [countResult, items] = await Promise.all([countQuery, dataQuery]);
+
+    return {
+      items,
+      page,
+      pageSize,
+      total: countResult[0]?.count ?? 0,
+    };
   }
 
   async getById(id: number): Promise<TransactionResponseDto> {

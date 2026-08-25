@@ -1,5 +1,6 @@
 import { PlaceResponseDto } from '../place/place.dto';
 import { PublicUserResponseDto } from '../user/user.dto';
+import { PaginationQuery } from '../common/common.dto';
 
 export class TransactionListResponseDto {
   items: TransactionResponseDto[];
@@ -24,3 +25,7 @@ export class CreateTransactionRequestDto {
 }
 
 export class UpdateTransactionRequestDto extends CreateTransactionRequestDto {}
+
+export class TransactionQueryDto extends PaginationQuery {
+  search?: string;
+}
