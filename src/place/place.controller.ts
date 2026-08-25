@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -42,31 +43,33 @@ export class PlaceController {
   }
 
   @Get(':id')
-  async getPlaceById(@Param('id') id: string): Promise<PlaceDetailResponseDto> {
-    return this.placeService.getById(Number(id));
+  async getPlaceById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<PlaceDetailResponseDto> {
+    return this.placeService.getById(id);
   }
 
   @Put(':id')
   async updatePlace(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
   ): Promise<PlaceDetailResponseDto> {
-    return this.placeService.update(Number(id), updatePlaceDto);
+    return this.placeService.update(id, updatePlaceDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePlace(@Param('id') id: string): Promise<void> {
-    return this.placeService.delete(Number(id));
+  async deletePlace(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.placeService.delete(id);
   }
 
   @Get('/:id/transactions')
   async getTransactionsByPlaceId(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Query() paginationQuery: PaginationQuery,
   ): Promise<TransactionListResponseDto> {
     return this.transactionService.getAll(paginationQuery, {
-      placeId: Number(id),
+      placeId: id,
     });
   }
 }

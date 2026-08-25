@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -39,22 +40,24 @@ export class TransactionController {
 
   @Get(':id')
   async getTransactionById(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<TransactionResponseDto> {
-    return this.transactionService.getById(Number(id));
+    return this.transactionService.getById(id);
   }
 
   @Put(':id')
   async updateTransaction(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
-    return this.transactionService.updateById(Number(id), updateTransactionDto);
+    return this.transactionService.updateById(id, updateTransactionDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteTransaction(@Param('id') id: string): Promise<void> {
-    return this.transactionService.deleteById(Number(id));
+  async deleteTransaction(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    return this.transactionService.deleteById(id);
   }
 }
