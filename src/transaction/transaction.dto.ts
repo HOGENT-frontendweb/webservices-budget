@@ -1,6 +1,9 @@
 import { PlaceResponseDto } from '../place/place.dto';
 import { PaginationQuery } from '../common/common.dto';
 import { UserResponseDto } from '../user/user.dto';
+import { CreateTransaction } from '../types/transaction';
+import { IsDate, IsInt, MaxDate, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class TransactionListResponseDto {
   items: TransactionResponseDto[];
@@ -17,10 +20,24 @@ export class TransactionResponseDto {
   place: PlaceResponseDto;
 }
 
-export class CreateTransactionRequestDto {
+export class CreateTransactionRequestDto implements Omit<
+  CreateTransaction,
+  'id'
+> {
+  @IsInt()
+  @Min(1)
   placeId: number;
+
+  @IsInt()
+  @Min(1)
   userId: number;
+
+  @IsInt()
   amount: number;
+
+  @Type(() => Date)
+  @IsDate()
+  @MaxDate(new Date(), { message: 'Date must not be in the future' })
   date: Date;
 }
 
