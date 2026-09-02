@@ -22,6 +22,8 @@ import { PlaceService } from './place.service';
 import { PaginationQuery } from '../common/common.dto';
 import { TransactionListResponseDto } from '../transaction/transaction.dto';
 import { TransactionService } from '../transaction/transaction.service';
+import { Role } from '../types/auth';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('places')
 export class PlaceController {
@@ -36,6 +38,7 @@ export class PlaceController {
   }
 
   @Post()
+  @Roles(Role.ADMIN)
   async createPlace(
     @Body() createPlaceDto: CreatePlaceRequestDto,
   ): Promise<PlaceDetailResponseDto> {
@@ -50,6 +53,7 @@ export class PlaceController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMIN)
   async updatePlace(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePlaceDto: UpdatePlaceRequestDto,
@@ -59,6 +63,7 @@ export class PlaceController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(Role.ADMIN)
   async deletePlace(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.placeService.delete(id);
   }
