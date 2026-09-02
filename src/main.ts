@@ -7,6 +7,7 @@ import {
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
+import CustomLogger from './core/customLogger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -40,6 +41,8 @@ async function bootstrap() {
   const config = app.get(ConfigService<ServerConfig>);
   const port = config.get<number>('port')!;
   const cors = config.get<CorsConfig>('cors')!;
+
+  app.useLogger(new CustomLogger());
 
   app.enableCors({
     origin: cors.origins,
