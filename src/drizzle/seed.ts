@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/mysql2';
 import * as mysql from 'mysql2/promise';
 import * as argon2 from 'argon2';
 import * as schema from './schema';
+import { Role } from '../types/auth';
 
 const connection = mysql.createPool({
   uri: process.env.DATABASE_URL,
@@ -66,21 +67,21 @@ async function seedUsers() {
       name: 'Thomas Aelbrecht',
       email: 'thomas.aelbrecht@hogent.be',
       passwordHash: await hashPassword('12345678'),
-      roles: ['admin', 'user'],
+      roles: [Role.ADMIN, Role.USER],
     },
     {
       id: 2,
       name: 'Pieter Van Der Helst',
       email: 'pieter.vanderhelst@hogent.be',
       passwordHash: await hashPassword('12345678'),
-      roles: ['user'],
+      roles: [Role.USER],
     },
     {
       id: 3,
       name: 'Karine Samyn',
       email: 'karine.samyn@hogent.be',
       passwordHash: await hashPassword('12345678'),
-      roles: ['user'],
+      roles: [Role.USER],
     },
   ]);
 
