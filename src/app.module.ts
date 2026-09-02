@@ -7,6 +7,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
 import { LoggerMiddleware } from './lib/logger.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LoggerMiddleware } from './lib/logger.middleware';
     DrizzleModule,
     TransactionModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [HealthController],
   providers: [],
