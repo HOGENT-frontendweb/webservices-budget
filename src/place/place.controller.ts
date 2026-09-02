@@ -16,6 +16,7 @@ import {
   CreatePlaceRequestDto,
   PlaceDetailResponseDto,
   PlaceListResponseDto,
+  PlaceResponseDto,
   UpdatePlaceRequestDto,
 } from './place.dto';
 import { PlaceService } from './place.service';
@@ -25,7 +26,21 @@ import { TransactionService } from '../transaction/transaction.service';
 import { Role, type Session } from '../types/auth';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Places')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized - you need to be signed in',
+})
 @Controller('places')
 export class PlaceController {
   constructor(
@@ -33,11 +48,19 @@ export class PlaceController {
     private transactionService: TransactionService,
   ) {}
 
+  @ApiOkResponse({
+    description: 'Get all places',
+    type: PlaceListResponseDto,
+  })
   @Get()
   async getAllPlaces(): Promise<PlaceListResponseDto> {
     return this.placeService.getAll();
   }
 
+  @ApiCreatedResponse({
+    description: 'Create place',
+    type: PlaceResponseDto,
+  })
   @Post()
   @Roles(Role.ADMIN)
   async createPlace(
@@ -46,6 +69,13 @@ export class PlaceController {
     return this.placeService.create(createPlaceDto);
   }
 
+  @ApiOkResponse({
+    description: 'Get place by ID',
+    type: PlaceResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'Place not found',
+  })
   @Get(':id')
   async getPlaceById(
     @Param('id', ParseIntPipe) id: number,
@@ -53,6 +83,10 @@ export class PlaceController {
     return this.placeService.getById(id);
   }
 
+  @ApiOkResponse({
+    description: 'Update place',
+    type: PlaceResponseDto,
+  })
   @Put(':id')
   @Roles(Role.ADMIN)
   async updatePlace(
@@ -62,6 +96,9 @@ export class PlaceController {
     return this.placeService.update(id, updatePlaceDto);
   }
 
+  @ApiNoContentResponse({
+    description: 'Delete place',
+  })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(Role.ADMIN)
