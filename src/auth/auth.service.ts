@@ -9,6 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { AuthConfig, ServerConfig } from '../config/configuration';
 import { User } from '../types/user';
 import { JwtPayload } from '../types/auth';
+import { LoginRequestDto } from '../session/session.dto';
+import { eq } from 'drizzle-orm';
+import { users } from '../drizzle/schema';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +21,31 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<ServerConfig>,
   ) {}
+
+  async login({ email, password }: LoginRequestDto): Promise<string> {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'The given email and password do not match',
+      );
+    }
+
+    const passwordValid = await this.verifyPassword(
+      password,
+      user.passwordHash,
+    );
+
+    if (!passwordValid) {
+      throw new UnauthorizedException(
+        'The given email and password do not match',
+      );
+    }
+
+    return this.signJwt(user);
+  }
 
   async hashPassword(password: string): Promise<string> {
     const authConfig = this.configService.get<AuthConfig>('auth')!;
