@@ -5,6 +5,7 @@ import {
   tinyint,
   primaryKey,
   datetime,
+  json,
 } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 
@@ -19,6 +20,11 @@ export const places = mysqlTable('places', {
 export const users = mysqlTable('users', {
   id: int('id', { unsigned: true }).primaryKey().autoincrement(),
   name: varchar('name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 })
+    .notNull()
+    .unique('idx_user_email_unique'),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  roles: json('roles').notNull(),
 });
 
 export const transactions = mysqlTable('transactions', {

@@ -15,6 +15,13 @@
       "when": 1787659311523,
       "tag": "0001_powerful_scrambler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1788338897354,
+      "tag": "0002_keen_sharon_ventura",
+      "breakpoints": true
     }
   ]
 }
