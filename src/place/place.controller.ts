@@ -27,6 +27,7 @@ import { Role, type Session } from '../types/auth';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -61,6 +62,9 @@ export class PlaceController {
     description: 'Create place',
     type: PlaceResponseDto,
   })
+  @ApiBadRequestResponse({
+    description: 'Invalid input data',
+  })
   @Post()
   @Roles(Role.ADMIN)
   async createPlace(
@@ -86,6 +90,9 @@ export class PlaceController {
   @ApiOkResponse({
     description: 'Update place',
     type: PlaceResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input data',
   })
   @Put(':id')
   @Roles(Role.ADMIN)
