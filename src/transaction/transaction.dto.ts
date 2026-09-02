@@ -2,7 +2,14 @@ import { PlaceResponseDto } from '../place/place.dto';
 import { PaginationQuery } from '../common/common.dto';
 import { UserResponseDto } from '../user/user.dto';
 import { CreateTransaction } from '../types/transaction';
-import { IsDate, IsInt, MaxDate, Min } from 'class-validator';
+import {
+  IsDate,
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxDate, MaxLength,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class TransactionListResponseDto {
@@ -44,5 +51,8 @@ export class CreateTransactionRequestDto implements Omit<
 export class UpdateTransactionRequestDto extends CreateTransactionRequestDto {}
 
 export class TransactionQueryDto extends PaginationQuery {
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
   search?: string;
 }
