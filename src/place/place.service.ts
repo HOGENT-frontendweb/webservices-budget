@@ -11,7 +11,7 @@ import {
   InjectDrizzle,
 } from '../drizzle/drizzle.provider';
 import { places, transactions, userFavoritePlaces } from '../drizzle/schema';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, getTableColumns } from 'drizzle-orm';
 
 @Injectable()
 export class PlaceService {
@@ -72,11 +72,15 @@ export class PlaceService {
     }
   }
 
-  async getFavoritePlacesByUserId(userId: number): Promise<PlaceResponseDto[]> {
-    const favoritePlaces = await this.db.query.userFavoritePlaces.findMany({
-      where: eq(userFavoritePlaces.userId, userId),
-      with: { place: true },
-    });
-    return favoritePlaces.map((fav) => fav.place);
+  async getFavoritePlacesByUserId(
+    userId: number,
+  ): Promise<PlaceListResponseDto> {
+    const items = await this.db
+      .select(getTableColumns(places))
+      .from(userFavoritePlaces)
+      .innerJoin(places, eq(places.id, userFavoritePlaces.placeId))
+      .where(eq(userFavoritePlaces.userId, userId));
+
+    return { items };
   }
 }
