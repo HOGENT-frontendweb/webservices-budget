@@ -20,6 +20,8 @@ import {
 import { UserService } from './user.service';
 import { LoginResponseDto } from '../session/session.dto';
 import { AuthService } from '../auth/auth.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../types/auth';
 
 @Controller('users')
 export class UserController {
@@ -30,6 +32,7 @@ export class UserController {
   ) {}
 
   @Get()
+  @Roles(Role.ADMIN)
   async getAllUsers(): Promise<UserListResponseDto> {
     return this.userService.getAll();
   }
