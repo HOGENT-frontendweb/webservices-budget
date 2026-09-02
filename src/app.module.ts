@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
 import { LoggerMiddleware } from './lib/logger.middleware';
 import { AuthModule } from './auth/auth.module';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     TransactionModule,
     UserModule,
     AuthModule,
+    SessionModule,
   ],
   controllers: [HealthController],
   providers: [],
