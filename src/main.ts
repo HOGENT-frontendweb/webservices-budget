@@ -8,6 +8,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import CustomLogger from './core/customLogger';
+import { HttpExceptionFilter } from './lib/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,6 +38,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = app.get(ConfigService<ServerConfig>);
   const port = config.get<number>('port')!;
