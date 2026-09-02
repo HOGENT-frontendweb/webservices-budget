@@ -15,7 +15,7 @@ import {
   CreateUserRequestDto,
   UpdateUserRequestDto,
   UserListResponseDto,
-  UserResponseDto,
+  PublicUserResponseDto,
 } from './user.dto';
 import { UserService } from './user.service';
 
@@ -32,14 +32,14 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
+  async getUserById(@Param('id') id: number): Promise<PublicUserResponseDto> {
     return this.userService.getById(id);
   }
 
   @Post()
   async createUser(
     @Body() dto: CreateUserRequestDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<PublicUserResponseDto> {
     return this.userService.create(dto);
   }
 
@@ -47,7 +47,7 @@ export class UserController {
   async updateUserById(
     @Param('id') id: number,
     @Body() dto: UpdateUserRequestDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<PublicUserResponseDto> {
     return this.userService.updateById(id, dto);
   }
 

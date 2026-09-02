@@ -1,13 +1,23 @@
-import { CreateUser } from '../types/user';
+import { CreateUser, User } from '../types/user';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { Expose } from 'class-transformer';
 
 export class UserListResponseDto {
-  items: UserResponseDto[];
+  items: PublicUserResponseDto[];
 }
 
-export class UserResponseDto {
+export class PublicUserResponseDto implements Omit<
+  User,
+  'passwordHash' | 'roles'
+> {
+  @Expose()
   id: number;
+
+  @Expose()
   name: string;
+
+  @Expose()
+  email: string;
 }
 
 export class CreateUserRequestDto implements Pick<CreateUser, 'name'> {

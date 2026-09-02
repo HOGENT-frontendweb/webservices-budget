@@ -1,6 +1,6 @@
 import { PlaceResponseDto } from '../place/place.dto';
 import { PaginationQuery } from '../common/common.dto';
-import { UserResponseDto } from '../user/user.dto';
+import { PublicUserResponseDto } from '../user/user.dto';
 import { CreateTransaction } from '../types/transaction';
 import {
   IsDate,
@@ -23,7 +23,7 @@ export class TransactionResponseDto {
   id: number;
   amount: number;
   date: Date;
-  user: UserResponseDto;
+  user: PublicUserResponseDto;
   place: PlaceResponseDto;
 }
 
