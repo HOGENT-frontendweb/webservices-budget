@@ -22,8 +22,9 @@ import { PlaceService } from './place.service';
 import { PaginationQuery } from '../common/common.dto';
 import { TransactionListResponseDto } from '../transaction/transaction.dto';
 import { TransactionService } from '../transaction/transaction.service';
-import { Role } from '../types/auth';
+import { Role, type Session } from '../types/auth';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 
 @Controller('places')
 export class PlaceController {
@@ -70,11 +71,17 @@ export class PlaceController {
 
   @Get('/:id/transactions')
   async getTransactionsByPlaceId(
+    @CurrentUser() user: Session,
     @Param('id', ParseIntPipe) id: number,
     @Query() paginationQuery: PaginationQuery,
   ): Promise<TransactionListResponseDto> {
-    return this.transactionService.getAll(paginationQuery, {
-      placeId: id,
-    });
+    return this.transactionService.getAll(
+      user.id,
+      user.roles,
+      paginationQuery,
+      {
+        placeId: id,
+      },
+    );
   }
 }

@@ -30,7 +30,7 @@ export class TransactionResponseDto {
 
 export class CreateTransactionRequestDto implements Omit<
   CreateTransaction,
-  'id'
+  'userId'
 > {
   @IsInt()
   @Min(1)

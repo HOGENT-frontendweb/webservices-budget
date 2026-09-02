@@ -12,6 +12,7 @@ import {
 } from '../drizzle/drizzle.provider';
 import { and, asc, count, desc, eq, like } from 'drizzle-orm';
 import { places, transactions, users } from '../drizzle/schema';
+import { Role } from '../types/auth';
 
 interface GetAllTransactionFilters {
   placeId?: number;
@@ -25,6 +26,8 @@ export class TransactionService {
   ) {}
 
   async getAll(
+    userId: number,
+    roles: string[],
     { page = 1, pageSize = 10, search = '' }: TransactionQueryDto,
     filters?: GetAllTransactionFilters,
   ): Promise<TransactionListResponseDto> {
@@ -36,6 +39,10 @@ export class TransactionService {
 
     if (search) {
       whereConditions.push(like(places.name, `%${search}%`));
+    }
+
+    if (!roles.includes(Role.ADMIN)) {
+      whereConditions.push(eq(transactions.userId, userId));
     }
 
     const whereClause =
@@ -77,17 +84,31 @@ export class TransactionService {
     };
   }
 
-  async getById(id: number): Promise<TransactionResponseDto> {
+  async getById(
+    userId: number,
+    roles: string[],
+    id: number,
+  ): Promise<TransactionResponseDto> {
+    const whereCondition = roles.includes(Role.ADMIN)
+      ? eq(transactions.id, id)
+      : and(eq(transactions.id, id), eq(transactions.userId, userId));
+
     const transaction = await this.db.query.transactions.findFirst({
       columns: {
         id: true,
         amount: true,
         date: true,
       },
-      where: eq(transactions.id, id),
+      where: whereCondition,
       with: {
         place: true,
-        user: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -99,39 +120,43 @@ export class TransactionService {
   }
 
   async create(
-    dto: CreateTransactionRequestDto,
+    userId: number,
+    { amount, date, placeId }: CreateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
     const [newTransaction] = await this.db
       .insert(transactions)
       .values({
-        ...dto,
-        date: new Date(dto.date),
+        amount,
+        date,
+        placeId,
+        userId,
       })
       .$returningId();
 
-    return this.getById(newTransaction.id);
+    return this.getById(userId, [Role.USER], newTransaction.id);
   }
 
   async updateById(
+    userId: number,
     id: number,
-    { amount, date, placeId, userId }: UpdateTransactionRequestDto,
+    { amount, date, placeId }: UpdateTransactionRequestDto,
   ): Promise<TransactionResponseDto> {
     await this.db
       .update(transactions)
       .set({
         amount,
-        date: new Date(date),
+        date,
         placeId,
       })
       .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
 
-    return this.getById(id);
+    return this.getById(userId, [Role.USER], id);
   }
 
-  async deleteById(id: number): Promise<void> {
+  async deleteById(userId: number, id: number): Promise<void> {
     const [result] = await this.db
       .delete(transactions)
-      .where(eq(transactions.id, id));
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
 
     if (result.affectedRows === 0) {
       throw new NotFoundException('No transaction with this id exists');
