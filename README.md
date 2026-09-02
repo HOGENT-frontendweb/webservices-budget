@@ -28,6 +28,15 @@ CORS_MAX_AGE=10800
 
 # Database configuration
 DATABASE_URL=mysql://devusr:devpwd@localhost:3306/budget
+
+# Auth configuration
+AUTH_JWT_SECRET=eenveeltemoeilijksecretdatniemandooitzalradenandersisdesitegehacked
+AUTH_JWT_AUDIENCE=budget.hogent.be
+AUTH_JWT_ISSUER=budget.hogent.be
+AUTH_HASH_LENGTH=32
+AUTH_HASH_TIME_COST=6
+AUTH_HASH_MEMORY_COST=65536
+AUTH_MAX_DELAY=2000
 ```
 
 ## Start this project
