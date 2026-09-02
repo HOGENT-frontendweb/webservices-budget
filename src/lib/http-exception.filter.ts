@@ -23,6 +23,28 @@ export class HttpExceptionFilter implements ExceptionFilter {
       details: null,
     };
 
+    if (exception instanceof HttpException) {
+      const exceptionResponse = exception.getResponse();
+
+      if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null &&
+        'message' in exceptionResponse &&
+        typeof exceptionResponse.message === 'string'
+      ) {
+        responseBody.message = exceptionResponse.message;
+      }
+
+      if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null &&
+        'details' in exceptionResponse &&
+        typeof exceptionResponse.details === 'object'
+      ) {
+        responseBody.details = exceptionResponse.details;
+      }
+    }
+
     new Logger('HttpExceptionFilter').error(
       `HTTP Exception: ${JSON.stringify(responseBody)}`,
     );
