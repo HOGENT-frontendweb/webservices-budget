@@ -113,6 +113,10 @@ export class PlaceController {
     return this.placeService.delete(id);
   }
 
+  @ApiOkResponse({
+    description: 'Get transactions from a place',
+    type: TransactionListResponseDto,
+  })
   @Get('/:id/transactions')
   async getTransactionsByPlaceId(
     @CurrentUser() user: Session,
