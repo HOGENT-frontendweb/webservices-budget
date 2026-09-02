@@ -7,6 +7,7 @@ import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig, ServerConfig } from '../config/configuration';
+import { User } from '../types/user';
 
 @Injectable()
 export class AuthService {
@@ -29,5 +30,13 @@ export class AuthService {
 
   async verifyPassword(password: string, hash: string): Promise<boolean> {
     return await argon2.verify(hash, password);
+  }
+
+  private async signJwt(user: User): Promise<string> {
+    return this.jwtService.signAsync({
+      sub: user.id,
+      email: user.email,
+      roles: user.roles,
+    });
   }
 }
