@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import CustomLogger from './core/customLogger';
 import { HttpExceptionFilter } from './lib/http-exception.filter';
+import { DrizzleQueryErrorFilter } from './drizzle/drizzle-query-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -40,6 +41,7 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new DrizzleQueryErrorFilter());
 
   const config = app.get(ConfigService<ServerConfig>);
   const port = config.get<number>('port')!;
