@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { CorsConfig, ServerConfig } from './config/configuration';
+import { CorsConfig, LogConfig, ServerConfig } from './config/configuration';
 import { ConfigService } from '@nestjs/config';
 import {
   BadRequestException,
@@ -41,8 +41,13 @@ async function bootstrap() {
   const config = app.get(ConfigService<ServerConfig>);
   const port = config.get<number>('port')!;
   const cors = config.get<CorsConfig>('cors')!;
+  const log = config.get<LogConfig>('log')!;
 
-  app.useLogger(new CustomLogger());
+  app.useLogger(
+    new CustomLogger({
+      logLevels: log.levels,
+    }),
+  );
 
   app.enableCors({
     origin: cors.origins,
