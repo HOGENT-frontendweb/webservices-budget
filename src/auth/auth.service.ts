@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   type DatabaseProvider,
   InjectDrizzle,
@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig, ServerConfig } from '../config/configuration';
 import { User } from '../types/user';
+import { JwtPayload } from '../types/auth';
 
 @Injectable()
 export class AuthService {
@@ -38,5 +39,15 @@ export class AuthService {
       email: user.email,
       roles: user.roles,
     });
+  }
+
+  async verifyJwt(token: string): Promise<JwtPayload> {
+    const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+
+    if (!payload) {
+      throw new UnauthorizedException('Invalid authentication token');
+    }
+
+    return payload;
   }
 }
