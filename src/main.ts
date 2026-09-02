@@ -2,7 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CorsConfig, ServerConfig } from './config/configuration';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +19,21 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       forbidUnknownValues: true,
       transform: true,
+
+      exceptionFactory: (errors: ValidationError[] = []) => {
+        console.log(errors);
+        const formattedErrors = errors.reduce(
+          (acc, err) => {
+            acc[err.property] = Object.values(err.constraints || {});
+            return acc;
+          },
+          {} as Record<string, string[]>,
+        );
+
+        return new BadRequestException({
+          details: { body: formattedErrors },
+        });
+      },
     }),
   );
 
