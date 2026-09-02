@@ -12,18 +12,21 @@ import {
 import { PlaceService } from '../place/place.service';
 import { PlaceResponseDto } from '../place/place.dto';
 import {
-  CreateUserRequestDto,
   UpdateUserRequestDto,
   UserListResponseDto,
   PublicUserResponseDto,
+  RegisterUserRequestDto,
 } from './user.dto';
 import { UserService } from './user.service';
+import { LoginResponseDto } from '../session/session.dto';
+import { AuthService } from '../auth/auth.service';
 
 @Controller('users')
 export class UserController {
   constructor(
-    private placeService: PlaceService,
-    private userService: UserService,
+    private readonly authService: AuthService,
+    private readonly placeService: PlaceService,
+    private readonly userService: UserService,
   ) {}
 
   @Get()
@@ -37,10 +40,11 @@ export class UserController {
   }
 
   @Post()
-  async createUser(
-    @Body() dto: CreateUserRequestDto,
-  ): Promise<PublicUserResponseDto> {
-    return this.userService.create(dto);
+  async registerUser(
+    @Body() registerDto: RegisterUserRequestDto,
+  ): Promise<LoginResponseDto> {
+    const token = await this.authService.register(registerDto);
+    return { token };
   }
 
   @Put(':id')

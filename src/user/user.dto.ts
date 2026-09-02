@@ -1,5 +1,10 @@
 import { CreateUser, User } from '../types/user';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { Expose } from 'class-transformer';
 
 export class UserListResponseDto {
@@ -20,10 +25,35 @@ export class PublicUserResponseDto implements Omit<
   email: string;
 }
 
-export class CreateUserRequestDto implements Pick<CreateUser, 'name'> {
+export class RegisterUserRequestDto implements Pick<
+  CreateUser,
+  'name' | 'email'
+> {
   @IsString()
-  @IsNotEmpty()
+  @MinLength(2)
   @MaxLength(255)
   name: string;
+
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(128)
+  password: string;
 }
-export class UpdateUserRequestDto extends CreateUserRequestDto {}
+
+export class UpdateUserRequestDto implements Pick<
+  CreateUser,
+  'name' | 'email'
+> {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(255)
+  name: string;
+
+  @IsString()
+  @IsEmail()
+  email: string;
+}

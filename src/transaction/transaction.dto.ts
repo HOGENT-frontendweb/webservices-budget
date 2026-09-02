@@ -7,7 +7,8 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  MaxDate, MaxLength,
+  MaxDate,
+  MaxLength,
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  CreateUserRequestDto,
   UpdateUserRequestDto,
   UserListResponseDto,
   PublicUserResponseDto,
+  RegisterUserRequestDto,
 } from './user.dto';
 import {
   type DatabaseProvider,
@@ -42,11 +42,6 @@ export class UserService {
     return plainToInstance(PublicUserResponseDto, user, {
       excludeExtraneousValues: true,
     });
-  }
-
-  async create(dto: CreateUserRequestDto): Promise<PublicUserResponseDto> {
-    const [newUser] = await this.db.insert(users).values(dto).$returningId();
-    return this.getById(newUser.id);
   }
 
   async deleteById(id: number): Promise<void> {

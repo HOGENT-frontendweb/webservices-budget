@@ -56,6 +56,7 @@ export class TransactionService {
         user: {
           id: users.id,
           name: users.name,
+          email: users.email,
         },
       })
       .from(transactions)

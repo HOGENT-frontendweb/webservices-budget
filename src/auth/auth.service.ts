@@ -8,10 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig, ServerConfig } from '../config/configuration';
 import { User } from '../types/user';
-import { JwtPayload } from '../types/auth';
+import { JwtPayload, Role } from '../types/auth';
 import { LoginRequestDto } from '../session/session.dto';
 import { eq } from 'drizzle-orm';
 import { users } from '../drizzle/schema';
+import { RegisterUserRequestDto } from '../user/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +46,30 @@ export class AuthService {
     }
 
     return this.signJwt(user);
+  }
+
+  async register({
+    name,
+    email,
+    password,
+  }: RegisterUserRequestDto): Promise<string> {
+    const passwordHash = await this.hashPassword(password);
+
+    const [newUser] = await this.db
+      .insert(users)
+      .values({
+        name,
+        email,
+        passwordHash: passwordHash,
+        roles: [Role.USER],
+      })
+      .$returningId();
+
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, newUser.id),
+    });
+
+    return this.signJwt(user!);
   }
 
   async hashPassword(password: string): Promise<string> {
