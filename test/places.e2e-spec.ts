@@ -9,6 +9,7 @@ import request from 'supertest';
 import { clearUsers, seedUsers } from './seeds/users';
 import { login, loginAdmin } from './helpers/login';
 import testAuthHeader from './helpers/testAuthHeader';
+import { clearTransactions, seedTransactions } from './seeds/transactions';
 
 describe('Places', () => {
   let app: INestApplication;
@@ -24,12 +25,14 @@ describe('Places', () => {
 
     await seedPlaces(drizzle);
     await seedUsers(app, drizzle);
+    await seedTransactions(drizzle);
 
     userAuthToken = await login(app);
     adminToken = await loginAdmin(app);
   });
 
   afterAll(async () => {
+    await clearTransactions(drizzle);
     await clearPlaces(drizzle);
     await clearUsers(drizzle);
     await app.close();
