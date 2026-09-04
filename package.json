@@ -20,6 +20,7 @@
     "test:e2e:cov": "pnpm test --config ./jest-e2e.config.ts --runInBand --coverage",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:test": "env-cmd -f .env.test drizzle-kit migrate",
     "db:seed": "env-cmd tsx src/drizzle/seed.ts"
   },
   "dependencies": {
