@@ -79,5 +79,7 @@ describe('Places', () => {
         'Validation failed (numeric string is expected)',
       );
     });
+
+    testAuthHeader(() => request(app.getHttpServer()).get(`${url}/1`));
   });
 });
