@@ -261,4 +261,37 @@ describe('Places', () => {
       }),
     );
   });
+
+  describe('DELETE /api/places/:id', () => {
+    it('should 204 and return nothing', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`${url}/3`)
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toEqual({});
+    });
+
+    it('should 400 with invalid place id', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`${url}/invalid`)
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.message).toBe(
+        'Validation failed (numeric string is expected)',
+      );
+    });
+
+    it('should 404 with not existing place', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`${url}/5`)
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.message).toBe('No place with this id exists');
+    });
+
+    testAuthHeader(() => request(app.getHttpServer()).delete(`${url}/1`));
+  });
 });
