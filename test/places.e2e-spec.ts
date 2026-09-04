@@ -59,5 +59,25 @@ describe('Places', () => {
       expect(response.body).toMatchObject(PLACES_SEED[0]);
       expect(response.body).toHaveProperty('transactions');
     });
+
+    it('should 404 when requesting not existing place', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`${url}/5`)
+        .auth(userAuthToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.message).toBe('No place with this id exists');
+    });
+
+    it('should 400 with invalid place id', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`${url}/invalid`)
+        .auth(userAuthToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.message).toBe(
+        'Validation failed (numeric string is expected)',
+      );
+    });
   });
 });
