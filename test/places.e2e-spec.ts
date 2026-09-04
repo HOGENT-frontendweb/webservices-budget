@@ -169,4 +169,96 @@ describe('Places', () => {
       request(app.getHttpServer()).post(url).send({ name: 'New place' }),
     );
   });
+
+  describe('PUT /api/places/:id', () => {
+    it('should 200 and return the updated place', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/1`)
+        .send({
+          name: 'Changed name',
+          rating: 1,
+        })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          id: 1,
+          name: 'Changed name',
+          rating: 1,
+        }),
+      );
+    });
+
+    it('should 409 for duplicate place name', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/2`)
+        .send({
+          name: 'Changed name',
+          rating: 1,
+        })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(409);
+      expect(response.body.message).toEqual(
+        'A place with this name already exists',
+      );
+    });
+
+    it('should 400 when missing name', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/1`)
+        .send({ rating: 3 })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.details.body).toHaveProperty('name');
+    });
+
+    it('should 400 when rating lower than one', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/1`)
+        .send({
+          name: 'The wrong place',
+          rating: 0,
+        })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.details.body).toHaveProperty('rating');
+    });
+
+    it('should 400 when rating higher than five', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/1`)
+        .send({
+          name: 'The wrong place',
+          rating: 6,
+        })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.details.body).toHaveProperty('rating');
+    });
+
+    it('should 400 when rating is a decimal', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${url}/1`)
+        .send({
+          name: 'The wrong place',
+          rating: 3.5,
+        })
+        .auth(adminToken, { type: 'bearer' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.details.body).toHaveProperty('rating');
+    });
+
+    testAuthHeader(() =>
+      request(app.getHttpServer()).put(`${url}/1`).send({
+        name: 'Changed name',
+        rating: 1,
+      }),
+    );
+  });
 });
