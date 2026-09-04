@@ -8,6 +8,7 @@ import { PLACES_SEED, seedPlaces, clearPlaces } from './seeds/places';
 import request from 'supertest';
 import { clearUsers, seedUsers } from './seeds/users';
 import { login, loginAdmin } from './helpers/login';
+import testAuthHeader from './helpers/testAuthHeader';
 
 describe('Places', () => {
   let app: INestApplication;
@@ -36,12 +37,13 @@ describe('Places', () => {
 
   describe('GET /api/places', () => {
     it('should 200 and return all places', async () => {
-      const response = await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get(url)
-        .auth(userAuthToken, { type: 'bearer' });
-
-      expect(response.statusCode).toBe(200);
-      expect(response.body.items).toEqual(expect.arrayContaining(PLACES_SEED));
+        .auth(userAuthToken, { type: 'bearer' })
+        .expect(200)
+        .expect({ items: PLACES_SEED });
     });
+
+    testAuthHeader(() => request(app.getHttpServer()).get(url));
   });
 });
