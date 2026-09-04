@@ -45,10 +45,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }
     }
 
-    new Logger('HttpExceptionFilter').error(
-      `HTTP Exception: ${JSON.stringify(responseBody)}`,
-    );
-
     response.status(status).json(responseBody);
   }
 }
