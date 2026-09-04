@@ -49,4 +49,15 @@ describe('Places', () => {
 
     testAuthHeader(() => request(app.getHttpServer()).get(url));
   });
+
+  describe('GET /api/places/:id', () => {
+    it('should 200 and return the requested place', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`${url}/1`)
+        .auth(userAuthToken, { type: 'bearer' });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toMatchObject(PLACES_SEED[0]);
+      expect(response.body).toHaveProperty('transactions');
+    });
+  });
 });
