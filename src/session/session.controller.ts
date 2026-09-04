@@ -35,7 +35,6 @@ export class SessionController {
   @UseInterceptors(AuthDelayInterceptor)
   @Public()
   @Post()
-  @HttpCode(HttpStatus.OK)
   async signIn(@Body() loginDto: LoginRequestDto): Promise<LoginResponseDto> {
     const token = await this.authService.login(loginDto);
     return { token };
