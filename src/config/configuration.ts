@@ -16,6 +16,7 @@ export default (): ServerConfig => ({
     levels: process.env.LOG_LEVELS
       ? (JSON.parse(process.env.LOG_LEVELS) as LogLevel[])
       : ['log', 'error', 'warn'],
+    disabled: process.env.LOG_DISABLED === 'true',
   },
   auth: {
     maxDelay: parseInt(process.env.AUTH_MAX_DELAY || '5000'),
@@ -52,6 +53,7 @@ export interface DatabaseConfig {
 
 export interface LogConfig {
   levels: LogLevel[];
+  disabled: boolean;
 }
 
 export interface JwtConfig {
